@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Ready for Input</span>
+        <span>App System Ready</span>
       </div>
     </div>
   </header>
@@ -39,13 +39,13 @@
   <!-- Navigation Tabs -->
   <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-20">
     <div class="max-w-7xl mx-auto px-4 flex space-x-8 overflow-x-auto">
-      <button onclick="switchTab('calc')" id="tab-calc" class="tab-active py-3 px-1 text-sm flex items-center gap-2 whitespace-nowrap transition-all">
+      <button onclick="switchTab('calc')" id="tab-calc" class="tab-active py-3 px-1 text-sm flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer">
         <i class="fa-solid fa-chart-pie"></i> 1. Population & Sample Size Calculator
       </button>
-      <button onclick="switchTab('pdf')" id="tab-pdf" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all">
+      <button onclick="switchTab('pdf')" id="tab-pdf" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer">
         <i class="fa-solid fa-file-pdf"></i> 2. Input Student IDs (Upload / Manual)
       </button>
-      <button onclick="switchTab('sampling')" id="tab-sampling" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all">
+      <button onclick="switchTab('sampling')" id="tab-sampling" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer">
         <i class="fa-solid fa-user-check"></i> 3. Random Student ID Sampler
       </button>
     </div>
@@ -62,8 +62,8 @@
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
           <h2 class="text-lg font-bold text-slate-900 border-b pb-2 flex justify-between items-center">
             <span>Sampling Parameters</span>
-            <button onclick="clearStrata()" class="text-xs text-rose-600 hover:underline flex items-center gap-1 font-normal">
-              <i class="fa-solid fa-trash"></i> Clear All
+            <button onclick="clearStrata()" class="text-xs text-rose-600 hover:underline flex items-center gap-1 font-normal cursor-pointer">
+              <i class="fa-solid fa-trash"></i> Clear All Rows
             </button>
           </h2>
 
@@ -78,7 +78,7 @@
           <div>
             <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Margin of Error (e)</label>
             <div class="flex gap-2">
-              <input type="number" id="margin-of-error" value="0.05" step="0.01" min="0.01" max="0.20" onchange="calculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <input type="number" id="margin-of-error" value="0.05" step="0.01" min="0.01" max="0.20" onchange="calculateAll()" onkeyup="calculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
               <select onchange="document.getElementById('margin-of-error').value=this.value; calculateAll();" class="bg-slate-100 border border-slate-300 text-xs rounded-lg px-2">
                 <option value="0.01">1%</option>
                 <option value="0.03">3%</option>
@@ -91,56 +91,4 @@
           <div class="pt-2">
             <div class="flex justify-between items-center mb-2">
               <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Population Inputs</label>
-              <span class="text-xs text-slate-400">Type group & population</span>
-            </div>
-            
-            <!-- Direct Editable HTML Form Inputs -->
-            <div id="strata-container" class="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
-              <div class="flex items-center gap-2 strata-row">
-                <input type="text" value="Second Year" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
-                <input type="number" value="45" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
-                <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-              <div class="flex items-center gap-2 strata-row">
-                <input type="text" value="Third Year" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
-                <input type="number" value="93" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
-                <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-              <div class="flex items-center gap-2 strata-row">
-                <input type="text" value="Fourth Year" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
-                <input type="number" value="94" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
-                <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
-              </div>
-            </div>
-
-            <button onclick="addStrataRow()" class="mt-3 w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-blue-200 transition-all">
-              <i class="fa-solid fa-plus"></i> Add Year Level / Group Row
-            </button>
-          </div>
-        </div>
-
-        <!-- Dynamic Results Table & Summary Cards -->
-        <div class="lg:col-span-2 space-y-6">
-          
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center space-x-4">
-              <div class="p-3 bg-blue-600 text-white rounded-lg"><i class="fa-solid fa-users text-2xl"></i></div>
-              <div>
-                <p class="text-xs font-semibold text-blue-800 uppercase">Total Target Pop. (N)</p>
-                <p class="text-2xl font-black text-blue-950" id="stat-total-n">232</p>
-              </div>
-            </div>
-
-            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center space-x-4">
-              <div class="p-3 bg-emerald-600 text-white rounded-lg"><i class="fa-solid fa-user-check text-2xl"></i></div>
-              <div>
-                <p class="text-xs font-semibold text-emerald-800 uppercase">Required Sample (n)</p>
-                <p class="text-2xl font-black text-emerald-950" id="stat-total-sample">147</p>
-              </div>
-            </div>
-
-            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 flex items-center space-x-4">
-              <div class="p-3 bg-purple-600 text-white rounded-lg"><i class="fa-solid fa-percent text-2xl"></i></div>
-              <div>
-                <p class="text-xs font-semibold text-purple-800 uppercase">Sampling Ratio</p>
-                <p class="text-2xl font-black text-
+              <span class="text-
