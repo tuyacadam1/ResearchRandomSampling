@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Exact Class Grade Sheet Layout Active</span>
+        <span>Clean Name & Variable ID Length Parser</span>
       </div>
     </div>
   </header>
@@ -178,7 +178,7 @@
       </div>
     </section>
 
-    <!-- NAV 2: DATA SETUP & PARSER (EXACT PDF GRADE SHEET TABLE FORMAT) -->
+    <!-- NAV 2: DATA SETUP & PARSER -->
     <section id="sec-pdf" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -215,7 +215,7 @@
           <!-- Manual Text Box Input -->
           <div class="space-y-2">
             <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Student ID List</label>
-            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-G-0000430 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-G-000079 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
             <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all cursor-pointer">
               <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
             </button>
@@ -227,7 +227,7 @@
           <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
             <div>
               <h3 class="font-bold text-slate-800 text-sm">Extracted Student Masterlist Pool</h3>
-              <p class="text-xs text-slate-500">Master list directly matching the uploaded PDF grade report</p>
+              <p class="text-xs text-slate-500">Master list directly matching the uploaded PDF grade report layout</p>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="clearAllData()" class="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-medium transition-all cursor-pointer">
@@ -272,7 +272,7 @@
       </div>
     </section>
 
-    <!-- NAV 3: SAMPLING & GENERATOR (EXACT PDF GRADE SHEET TABLE FORMAT) -->
+    <!-- NAV 3: SAMPLING & GENERATOR -->
     <section id="sec-sampling" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -557,7 +557,7 @@
       });
     }
 
-    // COMPLETE 10-COLUMN PARSER MATCHING PDF GRADE SHEET
+    // PARSER ENHANCED FOR CLEAN NAME & VARIABLE LENGTH ID PATTERNS (e.g. 23-G-000079)
     function parseLineEntry(line, defaultSource = "Manual Entry") {
       line = line.trim();
       if (!line) return null;
@@ -566,21 +566,20 @@
         return null;
       }
 
-      const idRegex = /\b(2\d-[A-Z0-9]+-\d{7}|\d{7})\b/i;
+      // Variable length ID match: Supports 23-G-000079, 23-G-0000430, 23-E-12345, or 7-digit IDs
+      const idRegex = /\b(\d{2}-[A-Z0-9]+-\d+|\d{7})\b/i;
       const idMatch = line.match(idRegex);
 
       if (!idMatch) return null;
       const id = idMatch[0];
 
-      // Extract row number if present at line start
+      // Extract Row Number
       const rowNoMatch = line.match(/^(\d+)\s+/);
       const rowNo = rowNoMatch ? rowNoMatch[1] : (extractedStudents.length + 1).toString();
 
       const idIndex = line.indexOf(id);
       let restOfLine = line.substring(idIndex + id.length).trim();
 
-      // Default fallbacks for grade sheet fields
-      let name = "";
       let course = "BSED-ENGL";
       let prelims = "1.50";
       let midterms = "1.75";
@@ -589,7 +588,8 @@
       let remark = "Passed";
       let datePosted = "06/06/26";
 
-      // Match Course (e.g. BSED-ENGL, BSIT, BSCS)
+      // Separate Name from Course
+      let name = "";
       const courseMatch = restOfLine.match(/\b([A-Z]{2,}(-[A-Z]+)?)\b/);
       if (courseMatch) {
         course = courseMatch[0];
@@ -599,7 +599,7 @@
         name = restOfLine;
       }
 
-      // Match Grades (e.g. 1.75 2.00 1.50)
+      // Match Grades
       const gradeMatches = restOfLine.match(/(\d\.\d{2})/g);
       if (gradeMatches) {
         if (gradeMatches[0]) prelims = gradeMatches[0];
@@ -615,8 +615,12 @@
       const dateMatch = restOfLine.match(/\b(\d{2}\/\d{2}\/\d{2})\b/);
       if (dateMatch) datePosted = dateMatch[0];
 
-      // Clean student name
-      name = name.replace(/[^a-zA-Z\s,\.\-]/g, ' ').replace(/\s+/g, ' ').trim();
+      // CLEAN NAME ONLY: Remove extraneous numbers, course names, or marks from the Name column
+      name = name.replace(/[0-9]/g, '')
+                 .replace(/\b(Passed|Failed|BSED-ENGL|BSED|BSIT|BSCS)\b/gi, '')
+                 .replace(/[^a-zA-Z\s,\.\-]/g, ' ')
+                 .replace(/\s+/g, ' ')
+                 .trim();
 
       if (name.length > 0) {
         return {
