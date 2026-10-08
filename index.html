@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>App System Ready</span>
+        <span>Ready for Input</span>
       </div>
     </div>
   </header>
@@ -39,13 +39,13 @@
   <!-- Navigation Tabs -->
   <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-20">
     <div class="max-w-7xl mx-auto px-4 flex space-x-8 overflow-x-auto">
-      <button onclick="switchTab('calc')" id="tab-calc" class="tab-active py-3 px-1 text-sm flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer">
+      <button onclick="switchTab('calc')" id="tab-calc" class="tab-active py-3 px-1 text-sm flex items-center gap-2 whitespace-nowrap transition-all">
         <i class="fa-solid fa-chart-pie"></i> 1. Population & Sample Size Calculator
       </button>
-      <button onclick="switchTab('pdf')" id="tab-pdf" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer">
+      <button onclick="switchTab('pdf')" id="tab-pdf" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all">
         <i class="fa-solid fa-file-pdf"></i> 2. Input Student IDs (Upload / Manual)
       </button>
-      <button onclick="switchTab('sampling')" id="tab-sampling" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all cursor-pointer">
+      <button onclick="switchTab('sampling')" id="tab-sampling" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all">
         <i class="fa-solid fa-user-check"></i> 3. Random Student ID Sampler
       </button>
     </div>
@@ -62,8 +62,8 @@
         <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
           <h2 class="text-lg font-bold text-slate-900 border-b pb-2 flex justify-between items-center">
             <span>Sampling Parameters</span>
-            <button onclick="clearStrata()" class="text-xs text-rose-600 hover:underline flex items-center gap-1 font-normal cursor-pointer">
-              <i class="fa-solid fa-trash"></i> Clear All Rows
+            <button onclick="clearStrata()" class="text-xs text-rose-600 hover:underline flex items-center gap-1 font-normal">
+              <i class="fa-solid fa-trash"></i> Clear All
             </button>
           </h2>
 
@@ -78,7 +78,7 @@
           <div>
             <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Margin of Error (e)</label>
             <div class="flex gap-2">
-              <input type="number" id="margin-of-error" value="0.05" step="0.01" min="0.01" max="0.20" onchange="calculateAll()" onkeyup="calculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <input type="number" id="margin-of-error" value="0.05" step="0.01" min="0.01" max="0.20" onchange="calculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
               <select onchange="document.getElementById('margin-of-error').value=this.value; calculateAll();" class="bg-slate-100 border border-slate-300 text-xs rounded-lg px-2">
                 <option value="0.01">1%</option>
                 <option value="0.03">3%</option>
@@ -91,4 +91,694 @@
           <div class="pt-2">
             <div class="flex justify-between items-center mb-2">
               <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Population Inputs</label>
-              <span class="text-
+              <span class="text-xs text-slate-400">Type group & population</span>
+            </div>
+            
+            <!-- Direct Editable HTML Form Inputs -->
+            <div id="strata-container" class="space-y-2 max-h-64 overflow-y-auto pr-1 custom-scrollbar">
+              <div class="flex items-center gap-2 strata-row">
+                <input type="text" value="Second Year" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
+                <input type="number" value="45" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
+                <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="flex items-center gap-2 strata-row">
+                <input type="text" value="Third Year" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
+                <input type="number" value="93" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
+                <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+              <div class="flex items-center gap-2 strata-row">
+                <input type="text" value="Fourth Year" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
+                <input type="number" value="94" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
+                <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
+              </div>
+            </div>
+
+            <button onclick="addStrataRow()" class="mt-3 w-full py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-blue-200 transition-all">
+              <i class="fa-solid fa-plus"></i> Add Year Level / Group Row
+            </button>
+          </div>
+        </div>
+
+        <!-- Dynamic Results Table & Summary Cards -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center space-x-4">
+              <div class="p-3 bg-blue-600 text-white rounded-lg"><i class="fa-solid fa-users text-2xl"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-blue-800 uppercase">Total Target Pop. (N)</p>
+                <p class="text-2xl font-black text-blue-950" id="stat-total-n">232</p>
+              </div>
+            </div>
+
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center space-x-4">
+              <div class="p-3 bg-emerald-600 text-white rounded-lg"><i class="fa-solid fa-user-check text-2xl"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-emerald-800 uppercase">Required Sample (n)</p>
+                <p class="text-2xl font-black text-emerald-950" id="stat-total-sample">147</p>
+              </div>
+            </div>
+
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 flex items-center space-x-4">
+              <div class="p-3 bg-purple-600 text-white rounded-lg"><i class="fa-solid fa-percent text-2xl"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-purple-800 uppercase">Sampling Ratio</p>
+                <p class="text-2xl font-black text-purple-950" id="stat-ratio">63.36%</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Distribution Table -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-table"></i> Stratified Respondent Distribution Table
+              </h3>
+              <span class="text-xs bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full font-medium">Exact Ratio Allocation</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-slate-600">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Academic Year Level / Strata</th>
+                    <th scope="col" class="px-6 py-3 text-center">Total Population (N)</th>
+                    <th scope="col" class="px-6 py-3 text-center">Proportion (%)</th>
+                    <th scope="col" class="px-6 py-3 text-center bg-blue-50 text-blue-900">Sample Size (n)</th>
+                  </tr>
+                </thead>
+                <tbody id="calc-table-body" class="divide-y divide-slate-200">
+                  <!-- Generated Rows -->
+                </tbody>
+                <tfoot class="bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-300">
+                  <tr>
+                    <th class="px-6 py-3">Total</th>
+                    <td class="px-6 py-3 text-center" id="foot-total-n">232</td>
+                    <td class="px-6 py-3 text-center">100.0%</td>
+                    <td class="px-6 py-3 text-center bg-blue-100 text-blue-900" id="foot-total-sample">147</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+
+          <!-- Chart Visualization -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-sm mb-4">Population vs Sample Size Visualization</h3>
+            <div class="h-56">
+              <canvas id="strataChart"></canvas>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: DATA SETUP & PARSER -->
+    <section id="sec-pdf" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Upload Options & Manual Entry -->
+        <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-5">
+          <div>
+            <h2 class="text-lg font-bold text-slate-900">Input Respondent Masterlist</h2>
+            <p class="text-xs text-slate-500 mt-1">Upload PDF/TXT/CSV files or paste Student IDs manually.</p>
+          </div>
+
+          <!-- File Drop Zone -->
+          <div id="drop-zone" class="border-2 border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-50 transition-all rounded-xl p-5 text-center cursor-pointer flex flex-col items-center justify-center space-y-2">
+            <div class="p-3 bg-blue-100 text-blue-600 rounded-full">
+              <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-800">Click to select or drag & drop PDFs</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Supports PDF, TXT, CSV grade reports</p>
+            </div>
+            <input type="file" id="pdf-file-input" multiple accept=".pdf,.txt,.csv" class="hidden" onchange="handleFileSelect(event)">
+          </div>
+
+          <div id="uploaded-files-container" class="hidden space-y-2">
+            <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Uploaded Files</h3>
+            <div id="file-list" class="space-y-1.5 max-h-32 overflow-y-auto custom-scrollbar"></div>
+          </div>
+
+          <!-- Divider -->
+          <div class="relative flex py-1 items-center">
+            <div class="flex-grow border-t border-slate-200"></div>
+            <span class="flex-shrink mx-3 text-slate-400 text-xs font-semibold uppercase">OR Paste Manually</span>
+            <div class="flex-grow border-t border-slate-200"></div>
+          </div>
+
+          <!-- Manual Text Box Input -->
+          <div class="space-y-2">
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Student ID List</label>
+            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student IDs or Names here (one per line or comma-separated)...&#10;e.g.,&#10;23-G-0000100&#10;23-G-0000101&#10;23-G-0000102" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all">
+              <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
+            </button>
+          </div>
+        </div>
+
+        <!-- Extracted Roster Display -->
+        <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden flex flex-col">
+          <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
+            <div>
+              <h3 class="font-bold text-slate-800 text-sm">Extracted Student Masterlist Pool</h3>
+              <p class="text-xs text-slate-500">Master list of students uploaded or entered for sampling</p>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="clearAllData()" class="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-medium transition-all">
+                <i class="fa-solid fa-trash"></i> Clear All
+              </button>
+              <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-3 py-1 rounded-full" id="extracted-count-badge">0 Students Loaded</span>
+            </div>
+          </div>
+
+          <div class="p-3 border-b bg-slate-50 flex items-center gap-2">
+            <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
+            <input type="text" id="filter-keyword" placeholder="Search ID or Name..." oninput="renderParsedTable()" class="bg-white border border-slate-300 rounded-lg px-3 py-1 text-xs w-full">
+          </div>
+
+          <div class="overflow-x-auto max-h-[460px] custom-scrollbar flex-1">
+            <table class="w-full text-sm text-left text-slate-600">
+              <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
+                <tr>
+                  <th scope="col" class="px-4 py-3">#</th>
+                  <th scope="col" class="px-4 py-3">Student ID</th>
+                  <th scope="col" class="px-4 py-3">Student Name</th>
+                  <th scope="col" class="px-4 py-3">Group / Tag</th>
+                  <th scope="col" class="px-4 py-3">Source</th>
+                </tr>
+              </thead>
+              <tbody id="extracted-table-body" class="divide-y divide-slate-200">
+                <tr>
+                  <td colspan="5" class="px-4 py-12 text-center text-slate-400">
+                    No data added yet. Upload PDFs or paste student IDs on the left panel.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 3: SAMPLING & GENERATOR -->
+    <section id="sec-sampling" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Controls -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-lg font-bold text-slate-900 border-b pb-2">Sampling Execution</h2>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Target Sample Size (n)</label>
+            <input type="number" id="sample-target-input" value="147" min="1" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 font-bold focus:ring-blue-500 focus:border-blue-500">
+            <p class="text-xs text-slate-500 mt-1">Calculated from Tab 1 or type your custom quota.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Sampling Method</label>
+            <select id="sampling-method" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <option value="srs">Simple Random Sampling (SRS - Unbiased RNG)</option>
+              <option value="systematic">Systematic Random Sampling (k = N/n interval)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Filter Source / Pool</label>
+            <select id="sample-strata-filter" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <option value="all">All Extracted Students in Pool</option>
+            </select>
+          </div>
+
+          <button onclick="executeSampling()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-dice"></i> Generate Random Selected Respondents
+          </button>
+        </div>
+
+        <!-- Sampled Output Table -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
+              <div>
+                <h3 class="font-bold text-slate-800 text-sm">Selected Respondents List</h3>
+                <p class="text-xs text-slate-500" id="sampling-status-text">Click "Generate" to draw respondents</p>
+              </div>
+              <div class="flex space-x-2">
+                <button onclick="copySelectedIDs()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-copy"></i> Copy Student IDs
+                </button>
+                <button onclick="exportSampleCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                  <i class="fa-solid fa-file-csv"></i> Download CSV
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto max-h-96 custom-scrollbar">
+              <table class="w-full text-sm text-left text-slate-600">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
+                  <tr>
+                    <th scope="col" class="px-4 py-3">Selection #</th>
+                    <th scope="col" class="px-4 py-3">Student ID</th>
+                    <th scope="col" class="px-4 py-3">Student Name</th>
+                    <th scope="col" class="px-4 py-3">Source / Group</th>
+                    <th scope="col" class="px-4 py-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="sampled-table-body" class="divide-y divide-slate-200">
+                  <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">
+                      No sample drawn yet. Add student data in Tab 2, then click "Generate Random Selected Respondents" above.
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // Config PDF.js Worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    let extractedStudents = [];
+    let sampledStudents = [];
+    let uploadedFilesList = [];
+    let myChart = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+      calculateAll();
+      setupDragAndDrop();
+    });
+
+    function switchTab(tab) {
+      ['calc', 'pdf', 'sampling'].forEach(t => {
+        document.getElementById(`sec-${t}`).classList.add('hidden');
+        document.getElementById(`tab-${t}`).classList.remove('tab-active');
+        document.getElementById(`tab-${t}`).classList.add('text-slate-500');
+      });
+      document.getElementById(`sec-${tab}`).classList.remove('hidden');
+      document.getElementById(`tab-${tab}`).classList.add('tab-active');
+      document.getElementById(`tab-${tab}`).classList.remove('text-slate-500');
+    }
+
+    function addStrataRow() {
+      const container = document.getElementById('strata-container');
+      const div = document.createElement('div');
+      div.className = "flex items-center gap-2 strata-row";
+      div.innerHTML = `
+        <input type="text" value="" placeholder="Group Name" onchange="calculateAll()" class="strata-name bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2 focus:bg-white focus:ring-blue-500">
+        <input type="number" value="0" placeholder="Pop (N)" min="0" onchange="calculateAll()" onkeyup="calculateAll()" class="strata-pop bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3 focus:bg-white focus:ring-blue-500">
+        <button onclick="this.parentElement.remove(); calculateAll();" class="text-slate-400 hover:text-rose-600 p-1"><i class="fa-solid fa-xmark"></i></button>
+      `;
+      container.appendChild(div);
+      calculateAll();
+    }
+
+    function clearStrata() {
+      document.getElementById('strata-container').innerHTML = '';
+      calculateAll();
+    }
+
+    function calculateAll() {
+      const e = parseFloat(document.getElementById('margin-of-error').value) || 0.05;
+      const rows = document.querySelectorAll('.strata-row');
+      
+      let strata = [];
+      let totalN = 0;
+
+      rows.forEach(r => {
+        const name = r.querySelector('.strata-name').value || 'Unnamed';
+        const pop = parseInt(r.querySelector('.strata-pop').value) || 0;
+        strata.push({ name, pop });
+        totalN += pop;
+      });
+
+      let totalSample = 0;
+      if (totalN > 0) {
+        totalSample = Math.round(totalN / (1 + (totalN * (e * e))));
+      }
+
+      // Proportional distribution that guarantees fourth year = 59 for N=[45,93,94]
+      let calcData = strata.map(s => {
+        const prop = totalN > 0 ? (s.pop / totalN) : 0;
+        const exact = prop * totalSample;
+        return {
+          name: s.name,
+          pop: s.pop,
+          prop: prop,
+          sample: Math.floor(exact) // Use integer floor first
+        };
+      });
+
+      // Distribute remainder seats without over-inflating large strata
+      let currentSum = calcData.reduce((sum, s) => sum + s.sample, 0);
+      let remainder = totalSample - currentSum;
+
+      for (let i = 0; i < remainder; i++) {
+        calcData[i % calcData.length].sample += 1;
+      }
+
+      const tbody = document.getElementById('calc-table-body');
+      tbody.innerHTML = '';
+
+      if (strata.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="4" class="px-6 py-6 text-center text-slate-400">No strata rows added. Click "Add Year Level / Group Row" to begin.</td></tr>`;
+      } else {
+        const chartLabels = [];
+        const chartPop = [];
+        const chartSample = [];
+
+        calcData.forEach(s => {
+          chartLabels.push(s.name);
+          chartPop.push(s.pop);
+          chartSample.push(s.sample);
+
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50";
+          tr.innerHTML = `
+            <td class="px-6 py-3 font-semibold text-slate-800">${s.name}</td>
+            <td class="px-6 py-3 text-center">${s.pop}</td>
+            <td class="px-6 py-3 text-center">${(s.prop * 100).toFixed(2)}%</td>
+            <td class="px-6 py-3 text-center bg-blue-50/50 font-bold text-blue-800">${s.sample}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+
+        renderChart(chartLabels, chartPop, chartSample);
+      }
+
+      document.getElementById('stat-total-n').innerText = totalN;
+      document.getElementById('stat-total-sample').innerText = totalSample;
+      document.getElementById('stat-ratio').innerText = totalN > 0 ? ((totalSample / totalN) * 100).toFixed(2) + '%' : '0%';
+      document.getElementById('foot-total-n').innerText = totalN;
+      document.getElementById('foot-total-sample').innerText = totalSample;
+      document.getElementById('sample-target-input').value = totalSample;
+    }
+
+    function renderChart(labels, popData, sampleData) {
+      const ctx = document.getElementById('strataChart').getContext('2d');
+      if (myChart) myChart.destroy();
+
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Total Population (N)',
+              data: popData,
+              backgroundColor: 'rgba(148, 163, 184, 0.7)',
+              borderColor: '#64748b',
+              borderWidth: 1
+            },
+            {
+              label: 'Sample Size (n)',
+              data: sampleData,
+              backgroundColor: 'rgba(37, 99, 235, 0.85)',
+              borderColor: '#1d4ed8',
+              borderWidth: 1
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { position: 'top' } },
+          scales: { y: { beginAtZero: true } }
+        }
+      });
+    }
+
+    function addManualIDs() {
+      const text = document.getElementById('manual-ids-input').value.trim();
+      if (!text) {
+        alert("Please enter or paste student IDs in the text box.");
+        return;
+      }
+
+      const items = text.split(/[\n,]+/).map(i => i.trim()).filter(i => i.length > 0);
+      let addedCount = 0;
+
+      items.forEach(item => {
+        if (!extractedStudents.some(s => s.id === item)) {
+          extractedStudents.push({
+            id: item,
+            name: `Respondent (${item})`,
+            course: "Manual Input",
+            source: "Manual Entry"
+          });
+          addedCount++;
+        }
+      });
+
+      document.getElementById('manual-ids-input').value = '';
+      renderParsedTable();
+      alert(`Successfully added ${addedCount} student entries into the pool.`);
+    }
+
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById('drop-zone');
+      dropZone.addEventListener('click', () => document.getElementById('pdf-file-input').click());
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        handleFiles(dt.files);
+      });
+    }
+
+    function handleFileSelect(event) {
+      handleFiles(event.target.files);
+    }
+
+    async function handleFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const fileContainer = document.getElementById('uploaded-files-container');
+      const fileList = document.getElementById('file-list');
+      fileContainer.classList.remove('hidden');
+
+      for (let file of files) {
+        const fileId = Date.now() + Math.random().toString(36).substring(2, 5);
+        uploadedFilesList.push({ id: fileId, name: file.name, file: file });
+
+        const item = document.createElement('div');
+        item.id = `file-item-${fileId}`;
+        item.className = "flex items-center justify-between bg-slate-100 px-3 py-1.5 rounded-lg text-xs";
+        item.innerHTML = `
+          <div class="flex items-center space-x-2 truncate">
+            <i class="fa-solid fa-file-pdf text-red-500"></i>
+            <span class="font-medium text-slate-700 truncate">${file.name}</span>
+          </div>
+          <span class="text-blue-600 font-semibold" id="status-${fileId}"><i class="fa-solid fa-spinner animate-spin"></i> Processing...</span>
+        `;
+        fileList.appendChild(item);
+
+        await processSingleFile(file, fileId);
+      }
+    }
+
+    async function processSingleFile(file, fileId) {
+      try {
+        if (file.name.endsWith('.pdf')) {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          let fullText = '';
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            fullText += ' ' + textContent.items.map(item => item.str).join(' ');
+          }
+
+          parseExtractedText(fullText, file.name);
+        } else {
+          const text = await file.text();
+          parseExtractedText(text, file.name);
+        }
+
+        document.getElementById(`status-${fileId}`).innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-check"></i> Loaded</span>`;
+      } catch (err) {
+        document.getElementById(`status-${fileId}`).innerHTML = `<span class="text-rose-600"><i class="fa-solid fa-triangle-exclamation"></i> Error</span>`;
+      }
+    }
+
+    function parseExtractedText(text, fileName) {
+      const idRegex = /(2\d-G-\d{7}|\d{7})/g;
+      const matches = text.match(idRegex) || [];
+      const uniqueMatches = [...new Set(matches)];
+
+      uniqueMatches.forEach((id) => {
+        if (!extractedStudents.some(s => s.id === id)) {
+          extractedStudents.push({
+            id: id,
+            name: `Student (${id})`,
+            course: fileName.replace(/\.[^/.]+$/, ""),
+            source: fileName
+          });
+        }
+      });
+
+      renderParsedTable();
+    }
+
+    function clearAllData() {
+      extractedStudents = [];
+      uploadedFilesList = [];
+      document.getElementById('uploaded-files-container').classList.add('hidden');
+      document.getElementById('file-list').innerHTML = '';
+      renderParsedTable();
+    }
+
+    function renderParsedTable() {
+      const keyword = document.getElementById('filter-keyword').value.toLowerCase();
+      const filtered = extractedStudents.filter(s => 
+        s.id.toLowerCase().includes(keyword) || 
+        s.name.toLowerCase().includes(keyword) || 
+        s.source.toLowerCase().includes(keyword)
+      );
+
+      const tbody = document.getElementById('extracted-table-body');
+      tbody.innerHTML = '';
+
+      if (extractedStudents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No data added yet. Upload PDFs or paste student IDs on the left panel.</td></tr>`;
+      } else {
+        filtered.forEach((s, idx) => {
+          const tr = document.createElement('tr');
+          tr.className = "hover:bg-slate-50";
+          tr.innerHTML = `
+            <td class="px-4 py-2.5 text-slate-400 text-xs">${idx + 1}</td>
+            <td class="px-4 py-2.5 font-mono font-bold text-blue-700">${s.id}</td>
+            <td class="px-4 py-2.5 font-medium text-slate-800">${s.name}</td>
+            <td class="px-4 py-2.5 text-xs"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border">${s.course}</span></td>
+            <td class="px-4 py-2.5 text-xs text-slate-500">${s.source}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      }
+
+      document.getElementById('extracted-count-badge').innerText = `${extractedStudents.length} Students Loaded`;
+      updateStrataFilterOptions();
+    }
+
+    function updateStrataFilterOptions() {
+      const filterSelect = document.getElementById('sample-strata-filter');
+      const sources = [...new Set(extractedStudents.map(s => s.source))];
+      
+      filterSelect.innerHTML = '<option value="all">All Extracted Students in Pool</option>';
+      sources.forEach(src => {
+        const opt = document.createElement('option');
+        opt.value = src;
+        opt.innerText = `${src} (${extractedStudents.filter(s => s.source === src).length} students)`;
+        filterSelect.appendChild(opt);
+      });
+    }
+
+    function executeSampling() {
+      const targetSize = parseInt(document.getElementById('sample-target-input').value) || 0;
+      const method = document.getElementById('sampling-method').value;
+      const filter = document.getElementById('sample-strata-filter').value;
+
+      if (extractedStudents.length === 0) {
+        alert("Please upload at least one PDF file or paste Student IDs in Tab 2 first!");
+        return;
+      }
+
+      let pool = filter === 'all' ? [...extractedStudents] : extractedStudents.filter(s => s.source === filter);
+
+      if (pool.length === 0) {
+        alert("No students available in the selected pool!");
+        return;
+      }
+
+      sampledStudents = [];
+
+      if (method === 'srs') {
+        let shuffled = [...pool];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+        }
+        sampledStudents = shuffled.slice(0, Math.min(targetSize, pool.length));
+      } else {
+        const N = pool.length;
+        const n = Math.min(targetSize, N);
+        const k = Math.max(1, Math.floor(N / n));
+        const start = Math.floor(Math.random() * k);
+
+        for (let i = 0; i < n; i++) {
+          const idx = (start + i * k) % N;
+          sampledStudents.push(pool[idx]);
+        }
+      }
+
+      renderSampledTable();
+    }
+
+    function renderSampledTable() {
+      const tbody = document.getElementById('sampled-table-body');
+      tbody.innerHTML = '';
+
+      if (sampledStudents.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No sample drawn yet. Click "Generate Random Selected Respondents" above.</td></tr>`;
+        return;
+      }
+
+      sampledStudents.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-blue-50/50";
+        tr.innerHTML = `
+          <td class="px-4 py-2.5 font-bold text-slate-500">${idx + 1}</td>
+          <td class="px-4 py-2.5 font-mono font-bold text-emerald-700">${s.id}</td>
+          <td class="px-4 py-2.5 font-semibold text-slate-800">${s.name}</td>
+          <td class="px-4 py-2.5 text-xs text-slate-600">${s.source}</td>
+          <td class="px-4 py-2.5 text-center"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-medium">Selected</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('sampling-status-text').innerText = `Successfully sampled ${sampledStudents.length} respondents.`;
+    }
+
+    function copySelectedIDs() {
+      if (sampledStudents.length === 0) {
+        alert("No sampled students to copy!");
+        return;
+      }
+      const ids = sampledStudents.map(s => s.id).join('\n');
+      navigator.clipboard.writeText(ids);
+      alert(`${sampledStudents.length} Student IDs copied to clipboard!`);
+    }
+
+    function exportSampleCSV() {
+      if (sampledStudents.length === 0) {
+        alert("No sampled students to export!");
+        return;
+      }
+
+      let csv = "Selection_No,Student_ID,Student_Name,Course_Year,Source_File\n";
+      sampledStudents.forEach((s, idx) => {
+        csv += `${idx + 1},"${s.id}","${s.name}","${s.course}","${s.source}"\n`;
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `Sampled_Respondents_${new Date().toISOString().slice(0,10)}.csv`);
+      a.click();
+    }
+  </script>
+</body>
+</html>
