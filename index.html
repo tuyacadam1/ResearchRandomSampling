@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>All ID Formats Active (23-E-, 23-G-, etc.)</span>
+        <span>Grade Sheet Parser Active</span>
       </div>
     </div>
   </header>
@@ -178,7 +178,7 @@
       </div>
     </section>
 
-    <!-- TAB 2: DATA SETUP & PARSER (RESTORED MULTI-FIELD VIEW) -->
+    <!-- TAB 2: DATA SETUP & PARSER -->
     <section id="sec-pdf" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -196,7 +196,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-slate-800">Click to select or drag & drop PDFs</p>
-              <p class="text-[10px] text-slate-500 mt-0.5">Supports PDF, TXT, CSV grade reports</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Parses PDFs, grade reports & rosters</p>
             </div>
             <input type="file" id="pdf-file-input" multiple accept=".pdf,.txt,.csv" class="hidden" onchange="handleFileSelect(event)">
           </div>
@@ -215,7 +215,7 @@
           <!-- Manual Text Box Input -->
           <div class="space-y-2">
             <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Student ID List</label>
-            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student IDs and Names here (one per line)...&#10;e.g.,&#10;23-E-0000430 Abad, Marielle V.&#10;23-G-0000176 Abejo, Christine B.&#10;23-E-0000091 Aguhob, Kristine Jane G." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student IDs and Names here (one per line)...&#10;e.g.,&#10;23-G-0000430 Abad, Marielle V.&#10;23-G-0000176 Abejo, Christine B.&#10;23-G-0000091 Aguhob, Kristine Jane G." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
             <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all cursor-pointer">
               <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
             </button>
@@ -267,7 +267,7 @@
       </div>
     </section>
 
-    <!-- TAB 3: GENERATED OUTPUT (ONLY ID NO AND NAME) -->
+    <!-- TAB 3: SAMPLING & GENERATOR -->
     <section id="sec-sampling" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -544,36 +544,53 @@
       });
     }
 
-    // EXPANDED REGEX PATTERN TO SUPPORT ALL ID TYPES (23-E-, 23-G-, ETC.)
+    // ADVANCED PARSER DESIGNED FOR ACADEMIC CLASS GRADE SHEETS
     function parseLineEntry(line, defaultSource = "Manual Entry") {
       line = line.trim();
       if (!line) return null;
 
-      // Matches 23-E-0000000, 23-G-0000000, or any 7-digit ID formats
-      const idRegex = /(2\d-[A-Z0-9]+-\d{7}|\d{7})/i;
-      const match = line.match(idRegex);
-
-      if (match) {
-        const id = match[0];
-        
-        let namePart = line.replace(id, '')
-                            .replace(/^\d+[\.\s\-]+/, '') 
-                            .replace(/[0-9]+/g, '')        
-                            .replace(/[,;:]+/g, ' ')      
-                            .replace(/\b(BSIT|BSCS|BIT|SECTION|PAGE|MALE|FEMALE|GRADE|REMARKS|PASS|FAIL)\b/gi, '')
-                            .trim();
-
-        namePart = namePart.replace(/\s+/g, ' ');
-
-        if (namePart.length > 0) {
-          return {
-            id: id,
-            name: namePart,
-            course: defaultSource.replace(/\.[^/.]+$/, ""),
-            source: defaultSource
-          };
-        }
+      // Ignore header rows
+      if (/^\s*(No|ID\s*No|Name|Course|Pre-|Mid-|Final|Remark|Date)/i.test(line)) {
+        return null;
       }
+
+      // 1. Detect ID formats like 23-G-0000430, 23-E-0000176, or numeric IDs like 2111118, 2109743
+      const idRegex = /\b(2\d-[A-Z0-9]+-\d{7}|\d{7})\b/i;
+      const idMatch = line.match(idRegex);
+
+      if (!idMatch) return null;
+      const id = idMatch[0];
+
+      // 2. Extract text relative to the ID position
+      const idIndex = line.indexOf(id);
+      let nameCandidate = line.substring(idIndex + id.length).trim();
+
+      // If ID is after name (e.g. "Abad, Marielle V. 23-G-0000430"), take left side
+      if (!nameCandidate || nameCandidate.length < 3) {
+        nameCandidate = line.substring(0, idIndex).trim();
+      }
+
+      // 3. Strip leading row numbers (e.g. "1 ", "42 ")
+      nameCandidate = nameCandidate.replace(/^\d+\s+/, '').trim();
+
+      // 4. Isolate Name by splitting off Course code (e.g. BSED-ENGL, BSIT, BSCS) or grades (e.g. 1.75 2.00 Passed)
+      const courseOrGradeMatch = nameCandidate.match(/\s+([A-Z]{2,}(-[A-Z]+)?|\d\.\d{2}|Passed|Failed)\b/i);
+      if (courseOrGradeMatch) {
+        nameCandidate = nameCandidate.substring(0, courseOrGradeMatch.index).trim();
+      }
+
+      // 5. Clean special characters and multi-spaces
+      nameCandidate = nameCandidate.replace(/[^a-zA-Z\s,\.\-]/g, ' ').replace(/\s+/g, ' ').trim();
+
+      if (nameCandidate.length > 0) {
+        return {
+          id: id,
+          name: nameCandidate,
+          course: defaultSource.replace(/\.[^/.]+$/, ""),
+          source: defaultSource
+        };
+      }
+
       return null;
     }
 
@@ -656,16 +673,29 @@
             const page = await pdf.getPage(i);
             const text = await page.getTextContent();
             
-            let lastY, pageText = '';
-            for (let item of text.items) {
-              if (lastY == null || Math.abs(item.transform[5] - lastY) < 5) {
-                pageText += ' ' + item.str;
-              } else {
-                pageText += '\n' + item.str;
-              }
-              lastY = item.transform[5];
-            }
-            textContent += '\n' + pageText;
+            // Spatial Coordinate Line Reconstruction to maintain table integrity
+            let items = text.items.map(it => ({
+              str: it.str,
+              x: it.transform[4],
+              y: Math.round(it.transform[5])
+            }));
+
+            // Group by vertical Y line
+            let linesByY = {};
+            items.forEach(it => {
+              if (!linesByY[it.y]) linesByY[it.y] = [];
+              linesByY[it.y].push(it);
+            });
+
+            // Sort lines from top to bottom
+            let sortedYs = Object.keys(linesByY).sort((a, b) => b - a);
+
+            sortedYs.forEach(y => {
+              // Sort items left-to-right on the same line
+              let lineItems = linesByY[y].sort((a, b) => a.x - b.x);
+              let lineStr = lineItems.map(it => it.str).join(' ');
+              textContent += lineStr + '\n';
+            });
           }
         } else {
           textContent = await file.text();
@@ -674,6 +704,7 @@
         parseExtractedText(textContent, file.name);
         document.getElementById(`status-${fileId}`).innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-check"></i> Loaded</span>`;
       } catch (err) {
+        console.error(err);
         document.getElementById(`status-${fileId}`).innerHTML = `<span class="text-rose-600"><i class="fa-solid fa-triangle-exclamation"></i> Error</span>`;
       }
     }
@@ -698,7 +729,7 @@
       renderParsedTable();
     }
 
-    // RENDER FULL DATA IN TAB 2
+    // RENDER FULL MULTI-FIELD VIEW IN TAB 2
     function renderParsedTable() {
       const keyword = document.getElementById('filter-keyword').value.toLowerCase();
       const filtered = extractedStudents.filter(s => 
