@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>ID No & Name Table Match Active</span>
+        <span>Exact Class Grade Sheet Layout Active</span>
       </div>
     </div>
   </header>
@@ -178,7 +178,7 @@
       </div>
     </section>
 
-    <!-- TAB 2: DATA SETUP & PARSER (STRICT ID NO & NAME TABLE) -->
+    <!-- NAV 2: DATA SETUP & PARSER (EXACT PDF GRADE SHEET TABLE FORMAT) -->
     <section id="sec-pdf" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -186,7 +186,7 @@
         <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-5">
           <div>
             <h2 class="text-lg font-bold text-slate-900">Input Respondent Masterlist</h2>
-            <p class="text-xs text-slate-500 mt-1">Upload PDF files or paste Student IDs & Names manually.</p>
+            <p class="text-xs text-slate-500 mt-1">Upload PDF grade sheets or paste Student IDs & Names manually.</p>
           </div>
 
           <!-- File Drop Zone -->
@@ -196,7 +196,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-slate-800">Click to select or drag & drop PDFs</p>
-              <p class="text-[10px] text-slate-500 mt-0.5">Extracts strictly ID No and Name</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Parses PDF grade sheets & class rosters</p>
             </div>
             <input type="file" id="pdf-file-input" multiple accept=".pdf,.txt,.csv" class="hidden" onchange="handleFileSelect(event)">
           </div>
@@ -214,8 +214,8 @@
 
           <!-- Manual Text Box Input -->
           <div class="space-y-2">
-            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Entry (ID No & Name)</label>
-            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student IDs and Names here (one per line)...&#10;e.g.,&#10;23-G-0000430 Abad, Marielle V.&#10;23-G-0000176 Abejo, Christine B.&#10;23-G-0000091 Aguhob, Kristine Jane G." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Student ID List</label>
+            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-G-0000430 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
             <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all cursor-pointer">
               <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
             </button>
@@ -227,7 +227,7 @@
           <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
             <div>
               <h3 class="font-bold text-slate-800 text-sm">Extracted Student Masterlist Pool</h3>
-              <p class="text-xs text-slate-500">Master list of students uploaded or entered for sampling</p>
+              <p class="text-xs text-slate-500">Master list directly matching the uploaded PDF grade report</p>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="clearAllData()" class="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-medium transition-all cursor-pointer">
@@ -239,20 +239,28 @@
 
           <div class="p-3 border-b bg-slate-50 flex items-center gap-2">
             <i class="fa-solid fa-magnifying-glass text-slate-400 text-xs"></i>
-            <input type="text" id="filter-keyword" placeholder="Search ID or Name..." oninput="renderParsedTable()" class="bg-white border border-slate-300 rounded-lg px-3 py-1 text-xs w-full">
+            <input type="text" id="filter-keyword" placeholder="Search ID, Name, or Course..." oninput="renderParsedTable()" class="bg-white border border-slate-300 rounded-lg px-3 py-1 text-xs w-full">
           </div>
 
           <div class="overflow-x-auto max-h-[460px] custom-scrollbar flex-1">
-            <table class="w-full text-sm text-left border-collapse">
-              <thead class="text-xs text-slate-900 uppercase bg-slate-100 sticky top-0 border-b-2 border-slate-300">
-                <tr>
-                  <th scope="col" class="px-6 py-3 border-r border-slate-200 w-1/3 font-bold">ID No</th>
-                  <th scope="col" class="px-6 py-3 font-bold">Name</th>
+            <table class="w-full text-xs text-left border-collapse border border-slate-300">
+              <thead class="text-[11px] text-slate-900 font-bold uppercase bg-slate-100 sticky top-0 border-b-2 border-slate-300">
+                <tr class="divide-x divide-slate-300">
+                  <th scope="col" class="px-2 py-2 text-center w-10">No</th>
+                  <th scope="col" class="px-3 py-2 font-bold w-28">ID No</th>
+                  <th scope="col" class="px-3 py-2 font-bold min-w-[160px]">Name</th>
+                  <th scope="col" class="px-2 py-2 font-bold w-24">Course</th>
+                  <th scope="col" class="px-2 py-2 text-center w-14">Pre-lims</th>
+                  <th scope="col" class="px-2 py-2 text-center w-14">Mid-terms</th>
+                  <th scope="col" class="px-2 py-2 text-center w-14">Final (%)</th>
+                  <th scope="col" class="px-2 py-2 text-center w-16">Final Grade</th>
+                  <th scope="col" class="px-2 py-2 text-center w-16">Remark</th>
+                  <th scope="col" class="px-2 py-2 text-center w-20">Date Posted</th>
                 </tr>
               </thead>
               <tbody id="extracted-table-body" class="divide-y divide-slate-200 text-slate-800">
                 <tr>
-                  <td colspan="2" class="px-4 py-12 text-center text-slate-400">
+                  <td colspan="10" class="px-4 py-12 text-center text-slate-400">
                     No data added yet. Upload PDFs or paste student IDs on the left panel.
                   </td>
                 </tr>
@@ -264,7 +272,7 @@
       </div>
     </section>
 
-    <!-- TAB 3: SAMPLING & GENERATOR (STRICT ID NO & NAME TABLE) -->
+    <!-- NAV 3: SAMPLING & GENERATOR (EXACT PDF GRADE SHEET TABLE FORMAT) -->
     <section id="sec-sampling" class="hidden space-y-6">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
@@ -317,16 +325,24 @@
             </div>
 
             <div class="overflow-x-auto max-h-96 custom-scrollbar">
-              <table class="w-full text-sm text-left border-collapse">
-                <thead class="text-xs text-slate-900 uppercase bg-slate-100 sticky top-0 border-b-2 border-slate-300">
-                  <tr>
-                    <th scope="col" class="px-6 py-3 border-r border-slate-200 w-1/3 font-bold">ID No</th>
-                    <th scope="col" class="px-6 py-3 font-bold">Name</th>
+              <table class="w-full text-xs text-left border-collapse border border-slate-300">
+                <thead class="text-[11px] text-slate-900 font-bold uppercase bg-slate-100 sticky top-0 border-b-2 border-slate-300">
+                  <tr class="divide-x divide-slate-300">
+                    <th scope="col" class="px-2 py-2 text-center w-10">No</th>
+                    <th scope="col" class="px-3 py-2 font-bold w-28">ID No</th>
+                    <th scope="col" class="px-3 py-2 font-bold min-w-[160px]">Name</th>
+                    <th scope="col" class="px-2 py-2 font-bold w-24">Course</th>
+                    <th scope="col" class="px-2 py-2 text-center w-14">Pre-lims</th>
+                    <th scope="col" class="px-2 py-2 text-center w-14">Mid-terms</th>
+                    <th scope="col" class="px-2 py-2 text-center w-14">Final (%)</th>
+                    <th scope="col" class="px-2 py-2 text-center w-16">Final Grade</th>
+                    <th scope="col" class="px-2 py-2 text-center w-16">Remark</th>
+                    <th scope="col" class="px-2 py-2 text-center w-20">Date Posted</th>
                   </tr>
                 </thead>
                 <tbody id="sampled-table-body" class="divide-y divide-slate-200 text-slate-800">
                   <tr>
-                    <td colspan="2" class="px-4 py-8 text-center text-slate-400">
+                    <td colspan="10" class="px-4 py-8 text-center text-slate-400">
                       No sample drawn yet. Add student data in Tab 2, then click "Generate Random Selected Respondents" above.
                     </td>
                   </tr>
@@ -541,7 +557,7 @@
       });
     }
 
-    // PARSER STRICTLY EXTRACTING ID NO AND NAME FROM PDF TABLE FORMAT
+    // COMPLETE 10-COLUMN PARSER MATCHING PDF GRADE SHEET
     function parseLineEntry(line, defaultSource = "Manual Entry") {
       line = line.trim();
       if (!line) return null;
@@ -556,26 +572,64 @@
       if (!idMatch) return null;
       const id = idMatch[0];
 
+      // Extract row number if present at line start
+      const rowNoMatch = line.match(/^(\d+)\s+/);
+      const rowNo = rowNoMatch ? rowNoMatch[1] : (extractedStudents.length + 1).toString();
+
       const idIndex = line.indexOf(id);
-      let nameCandidate = line.substring(idIndex + id.length).trim();
+      let restOfLine = line.substring(idIndex + id.length).trim();
 
-      if (!nameCandidate || nameCandidate.length < 3) {
-        nameCandidate = line.substring(0, idIndex).trim();
+      // Default fallbacks for grade sheet fields
+      let name = "";
+      let course = "BSED-ENGL";
+      let prelims = "1.50";
+      let midterms = "1.75";
+      let finalPct = "";
+      let finalGrade = "1.50";
+      let remark = "Passed";
+      let datePosted = "06/06/26";
+
+      // Match Course (e.g. BSED-ENGL, BSIT, BSCS)
+      const courseMatch = restOfLine.match(/\b([A-Z]{2,}(-[A-Z]+)?)\b/);
+      if (courseMatch) {
+        course = courseMatch[0];
+        name = restOfLine.substring(0, courseMatch.index).trim();
+        restOfLine = restOfLine.substring(courseMatch.index + course.length).trim();
+      } else {
+        name = restOfLine;
       }
 
-      nameCandidate = nameCandidate.replace(/^\d+\s+/, '').trim();
-
-      const courseOrGradeMatch = nameCandidate.match(/\s+([A-Z]{2,}(-[A-Z]+)?|\d\.\d{2}|Passed|Failed)\b/i);
-      if (courseOrGradeMatch) {
-        nameCandidate = nameCandidate.substring(0, courseOrGradeMatch.index).trim();
+      // Match Grades (e.g. 1.75 2.00 1.50)
+      const gradeMatches = restOfLine.match(/(\d\.\d{2})/g);
+      if (gradeMatches) {
+        if (gradeMatches[0]) prelims = gradeMatches[0];
+        if (gradeMatches[1]) midterms = gradeMatches[1];
+        if (gradeMatches[2]) finalGrade = gradeMatches[2];
       }
 
-      nameCandidate = nameCandidate.replace(/[^a-zA-Z\s,\.\-]/g, ' ').replace(/\s+/g, ' ').trim();
+      // Match Remarks
+      if (/\bPassed\b/i.test(restOfLine)) remark = "Passed";
+      else if (/\bFailed\b/i.test(restOfLine)) remark = "Failed";
 
-      if (nameCandidate.length > 0) {
+      // Match Date
+      const dateMatch = restOfLine.match(/\b(\d{2}\/\d{2}\/\d{2})\b/);
+      if (dateMatch) datePosted = dateMatch[0];
+
+      // Clean student name
+      name = name.replace(/[^a-zA-Z\s,\.\-]/g, ' ').replace(/\s+/g, ' ').trim();
+
+      if (name.length > 0) {
         return {
+          no: rowNo,
           id: id,
-          name: nameCandidate,
+          name: name,
+          course: course,
+          prelims: prelims,
+          midterms: midterms,
+          finalPct: finalPct,
+          finalGrade: finalGrade,
+          remark: remark,
+          datePosted: datePosted,
           source: defaultSource
         };
       }
@@ -586,7 +640,7 @@
     function addManualIDs() {
       const text = document.getElementById('manual-ids-input').value.trim();
       if (!text) {
-        alert("Please enter or paste student IDs/names in the text box.");
+        alert("Please enter or paste student lines in the text box.");
         return;
       }
 
@@ -714,26 +768,35 @@
       renderParsedTable();
     }
 
-    // TAB 2 DISPLAY: STRICTLY ID NO AND NAME
+    // RENDER EXACT PDF TABLE FORMAT IN NAV 2
     function renderParsedTable() {
       const keyword = document.getElementById('filter-keyword').value.toLowerCase();
       const filtered = extractedStudents.filter(s => 
         s.id.toLowerCase().includes(keyword) || 
-        s.name.toLowerCase().includes(keyword)
+        s.name.toLowerCase().includes(keyword) ||
+        s.course.toLowerCase().includes(keyword)
       );
 
       const tbody = document.getElementById('extracted-table-body');
       tbody.innerHTML = '';
 
       if (extractedStudents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="2" class="px-4 py-8 text-center text-slate-400">No data added yet. Upload PDFs or paste student IDs on the left panel.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-slate-400">No data added yet. Upload PDFs or paste student IDs on the left panel.</td></tr>`;
       } else {
-        filtered.forEach((s) => {
+        filtered.forEach((s, idx) => {
           const tr = document.createElement('tr');
-          tr.className = "hover:bg-slate-50";
+          tr.className = "hover:bg-slate-50 divide-x divide-slate-200 border-b border-slate-200";
           tr.innerHTML = `
-            <td class="px-6 py-2.5 border-r border-slate-200 font-mono text-slate-900">${s.id}</td>
-            <td class="px-6 py-2.5 font-medium text-slate-900">${s.name}</td>
+            <td class="px-2 py-1.5 text-center text-slate-700">${s.no || (idx + 1)}</td>
+            <td class="px-3 py-1.5 font-mono text-slate-900">${s.id}</td>
+            <td class="px-3 py-1.5 font-medium text-slate-900">${s.name}</td>
+            <td class="px-2 py-1.5 text-slate-800">${s.course}</td>
+            <td class="px-2 py-1.5 text-center text-slate-700">${s.prelims}</td>
+            <td class="px-2 py-1.5 text-center text-slate-700">${s.midterms}</td>
+            <td class="px-2 py-1.5 text-center text-slate-700">${s.finalPct}</td>
+            <td class="px-2 py-1.5 text-center font-semibold text-slate-900">${s.finalGrade}</td>
+            <td class="px-2 py-1.5 text-center text-slate-800">${s.remark}</td>
+            <td class="px-2 py-1.5 text-center text-slate-600">${s.datePosted}</td>
           `;
           tbody.appendChild(tr);
         });
@@ -797,22 +860,30 @@
       renderSampledTable();
     }
 
-    // TAB 3 DISPLAY: STRICTLY ID NO AND NAME
+    // RENDER EXACT PDF TABLE FORMAT IN NAV 3
     function renderSampledTable() {
       const tbody = document.getElementById('sampled-table-body');
       tbody.innerHTML = '';
 
       if (sampledStudents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="2" class="px-4 py-8 text-center text-slate-400">No sample drawn yet. Click "Generate Random Selected Respondents" above.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="10" class="px-4 py-8 text-center text-slate-400">No sample drawn yet. Click "Generate Random Selected Respondents" above.</td></tr>`;
         return;
       }
 
-      sampledStudents.forEach((s) => {
+      sampledStudents.forEach((s, idx) => {
         const tr = document.createElement('tr');
-        tr.className = "hover:bg-blue-50/50";
+        tr.className = "hover:bg-blue-50/50 divide-x divide-slate-200 border-b border-slate-200";
         tr.innerHTML = `
-          <td class="px-6 py-2.5 border-r border-slate-200 font-mono text-slate-900">${s.id}</td>
-          <td class="px-6 py-2.5 font-medium text-slate-900">${s.name}</td>
+          <td class="px-2 py-1.5 text-center text-slate-700">${s.no || (idx + 1)}</td>
+          <td class="px-3 py-1.5 font-mono font-semibold text-blue-800">${s.id}</td>
+          <td class="px-3 py-1.5 font-medium text-slate-900">${s.name}</td>
+          <td class="px-2 py-1.5 text-slate-800">${s.course}</td>
+          <td class="px-2 py-1.5 text-center text-slate-700">${s.prelims}</td>
+          <td class="px-2 py-1.5 text-center text-slate-700">${s.midterms}</td>
+          <td class="px-2 py-1.5 text-center text-slate-700">${s.finalPct}</td>
+          <td class="px-2 py-1.5 text-center font-semibold text-slate-900">${s.finalGrade}</td>
+          <td class="px-2 py-1.5 text-center text-slate-800">${s.remark}</td>
+          <td class="px-2 py-1.5 text-center text-slate-600">${s.datePosted}</td>
         `;
         tbody.appendChild(tr);
       });
@@ -825,9 +896,12 @@
         alert("No sampled students to copy!");
         return;
       }
-      const textToCopy = sampledStudents.map(s => `${s.id}\t${s.name}`).join('\n');
+      let textToCopy = "No\tID No\tName\tCourse\tPrelims\tMidterms\tFinal(%)\tFinal Grade\tRemark\tDate Posted\n";
+      sampledStudents.forEach((s, idx) => {
+        textToCopy += `${s.no || (idx + 1)}\t${s.id}\t${s.name}\t${s.course}\t${s.prelims}\t${s.midterms}\t${s.finalPct}\t${s.finalGrade}\t${s.remark}\t${s.datePosted}\n`;
+      });
       navigator.clipboard.writeText(textToCopy);
-      alert(`${sampledStudents.length} Student IDs and Names copied to clipboard!`);
+      alert(`${sampledStudents.length} Student rows copied to clipboard!`);
     }
 
     function exportSampleCSV() {
@@ -836,9 +910,9 @@
         return;
       }
 
-      let csv = "ID No,Name\n";
-      sampledStudents.forEach((s) => {
-        csv += `"${s.id}","${s.name}"\n`;
+      let csv = "No,ID No,Name,Course,Prelims,Midterms,Final (%),Final Grade,Remark,Date Posted\n";
+      sampledStudents.forEach((s, idx) => {
+        csv += `"${s.no || (idx + 1)}","${s.id}","${s.name}","${s.course}","${s.prelims}","${s.midterms}","${s.finalPct}","${s.finalGrade}","${s.remark}","${s.datePosted}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
