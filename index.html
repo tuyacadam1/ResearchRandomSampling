@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Name Extractor Active</span>
+        <span>ID & Name Extractor Active</span>
       </div>
     </div>
   </header>
@@ -186,7 +186,7 @@
         <div class="lg:col-span-1 bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-5">
           <div>
             <h2 class="text-lg font-bold text-slate-900">Input Respondent Masterlist</h2>
-            <p class="text-xs text-slate-500 mt-1">Upload PDF/TXT/CSV files or paste Student IDs & Names manually.</p>
+            <p class="text-xs text-slate-500 mt-1">Upload PDF files or paste Student IDs & Names manually.</p>
           </div>
 
           <!-- File Drop Zone -->
@@ -196,7 +196,7 @@
             </div>
             <div>
               <p class="text-xs font-semibold text-slate-800">Click to select or drag & drop PDFs</p>
-              <p class="text-[10px] text-slate-500 mt-0.5">Supports PDF, TXT, CSV grade reports</p>
+              <p class="text-[10px] text-slate-500 mt-0.5">Extracts Student ID No. and Full Name</p>
             </div>
             <input type="file" id="pdf-file-input" multiple accept=".pdf,.txt,.csv" class="hidden" onchange="handleFileSelect(event)">
           </div>
@@ -214,7 +214,7 @@
 
           <!-- Manual Text Box Input -->
           <div class="space-y-2">
-            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Entry (ID Name or ID, Name)</label>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Entry (ID No. & Name)</label>
             <textarea id="manual-ids-input" rows="5" placeholder="Paste Student IDs and Names here (one per line)...&#10;e.g.,&#10;23-G-0000430 Abad, Marielle V.&#10;23-G-0000176 Abejo, Christine B.&#10;23-G-0000091 Aguhob, Kristine Jane G." class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
             <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all cursor-pointer">
               <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
@@ -227,7 +227,7 @@
           <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
             <div>
               <h3 class="font-bold text-slate-800 text-sm">Extracted Student Masterlist Pool</h3>
-              <p class="text-xs text-slate-500">Master list of students uploaded or entered for sampling</p>
+              <p class="text-xs text-slate-500">Master list containing strictly Student ID No. and Student Name</p>
             </div>
             <div class="flex items-center gap-2">
               <button onclick="clearAllData()" class="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-medium transition-all cursor-pointer">
@@ -249,13 +249,12 @@
                   <th scope="col" class="px-4 py-3">#</th>
                   <th scope="col" class="px-4 py-3">Student ID</th>
                   <th scope="col" class="px-4 py-3">Student Name</th>
-                  <th scope="col" class="px-4 py-3">Group / Tag</th>
-                  <th scope="col" class="px-4 py-3">Source</th>
+                  <th scope="col" class="px-4 py-3">Source File</th>
                 </tr>
               </thead>
               <tbody id="extracted-table-body" class="divide-y divide-slate-200">
                 <tr>
-                  <td colspan="5" class="px-4 py-12 text-center text-slate-400">
+                  <td colspan="4" class="px-4 py-12 text-center text-slate-400">
                     No data added yet. Upload PDFs or paste student IDs on the left panel.
                   </td>
                 </tr>
@@ -311,7 +310,7 @@
               </div>
               <div class="flex space-x-2">
                 <button onclick="copySelectedIDs()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-all flex items-center gap-1 cursor-pointer">
-                  <i class="fa-solid fa-copy"></i> Copy Student IDs
+                  <i class="fa-solid fa-copy"></i> Copy Selected List
                 </button>
                 <button onclick="exportSampleCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg transition-all flex items-center gap-1 shadow-sm cursor-pointer">
                   <i class="fa-solid fa-file-csv"></i> Download CSV
@@ -326,7 +325,7 @@
                     <th scope="col" class="px-4 py-3">Selection #</th>
                     <th scope="col" class="px-4 py-3">Student ID</th>
                     <th scope="col" class="px-4 py-3">Student Name</th>
-                    <th scope="col" class="px-4 py-3">Source / Group</th>
+                    <th scope="col" class="px-4 py-3">Source File</th>
                     <th scope="col" class="px-4 py-3 text-center">Status</th>
                   </tr>
                 </thead>
@@ -350,7 +349,6 @@
   <script>
     pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-    // Strata array state
     let strataData = [
       { id: 1, name: "Second Year", population: 45 },
       { id: 2, name: "Third Year", population: 93 },
@@ -368,7 +366,6 @@
       setupDragAndDrop();
     });
 
-    // Tab Navigation Switcher
     function switchTab(tab) {
       const tabs = ['calc', 'pdf', 'sampling'];
       tabs.forEach(t => {
@@ -390,7 +387,6 @@
       }
     }
 
-    // Render Strata Row Inputs
     function renderStrataInputs() {
       const container = document.getElementById('strata-container');
       container.innerHTML = '';
@@ -443,7 +439,6 @@
       calculateAll();
     }
 
-    // Calculation Engine: Exact Proportional Allocation
     function calculateAll() {
       const e = parseFloat(document.getElementById('margin-of-error').value) || 0.05;
       const totalN = strataData.reduce((sum, s) => sum + (s.population || 0), 0);
@@ -551,38 +546,38 @@
       });
     }
 
-    // Helper parser to separate Student ID and Student Name cleanly
+    // STRICT EXTRACTOR FOR STUDENT ID NO. & NAME ONLY
     function parseLineEntry(line, defaultSource = "Manual Entry") {
       line = line.trim();
       if (!line) return null;
 
+      // Regex matches Student ID patterns (e.g. 23-G-0000430 or 7-digit IDs)
       const idRegex = /(2\d-G-\d{7}|\d{7})/i;
       const match = line.match(idRegex);
 
       if (match) {
         const id = match[0];
-        // Clean out the ID and common line numbering prefixes (e.g., "1.", "1 -")
+        
+        // Extract Name and filter out extraneous words/numbers
         let namePart = line.replace(id, '')
-                            .replace(/^\d+[\.\s\-]+/, '')
-                            .replace(/[,;]+$/, '')
+                            .replace(/^\d+[\.\s\-]+/, '') // Remove leading row numbers e.g. "1."
+                            .replace(/[0-9]+/g, '')        // Remove residual numbers/grades
+                            .replace(/[,;:]+/g, ' ')      // Replace punctuation marks
+                            .replace(/\b(BSIT|BSCS|BIT|SECTION|PAGE|MALE|FEMALE|GRADE|REMARKS|PASS|FAIL)\b/gi, '') // Remove unwanted headers
                             .trim();
 
-        const studentName = namePart.length > 0 ? namePart : `Student (${id})`;
-        return {
-          id: id,
-          name: studentName,
-          course: defaultSource.replace(/\.[^/.]+$/, ""),
-          source: defaultSource
-        };
-      } else {
-        // Fallback for names without explicit IDs
-        return {
-          id: "N/A-" + Math.floor(1000 + Math.random() * 9000),
-          name: line.replace(/^\d+[\.\s\-]+/, '').trim(),
-          course: defaultSource.replace(/\.[^/.]+$/, ""),
-          source: defaultSource
-        };
+        // Standardize clean spaces
+        namePart = namePart.replace(/\s+/g, ' ');
+
+        if (namePart.length > 0) {
+          return {
+            id: id,
+            name: namePart,
+            source: defaultSource
+          };
+        }
       }
+      return null;
     }
 
     function addManualIDs() {
@@ -597,7 +592,7 @@
 
       lines.forEach(line => {
         const student = parseLineEntry(line, "Manual Entry");
-        if (student && !extractedStudents.some(s => s.id === student.id && s.name === student.name)) {
+        if (student && !extractedStudents.some(s => s.id === student.id)) {
           extractedStudents.push(student);
           addedCount++;
         }
@@ -664,7 +659,6 @@
             const page = await pdf.getPage(i);
             const text = await page.getTextContent();
             
-            // Extract by lines reconstructing coordinates
             let lastY, pageText = '';
             for (let item of text.items) {
               if (lastY == null || Math.abs(item.transform[5] - lastY) < 5) {
@@ -691,7 +685,7 @@
       const lines = text.split('\n');
       lines.forEach(line => {
         const student = parseLineEntry(line, fileName);
-        if (student && !extractedStudents.some(s => s.id === student.id && s.name === student.name)) {
+        if (student && !extractedStudents.some(s => s.id === student.id)) {
           extractedStudents.push(student);
         }
       });
@@ -719,7 +713,7 @@
       tbody.innerHTML = '';
 
       if (extractedStudents.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-4 py-8 text-center text-slate-400">No data added yet. Upload PDFs or paste student IDs on the left panel.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="4" class="px-4 py-8 text-center text-slate-400">No data added yet. Upload PDFs or paste student IDs on the left panel.</td></tr>`;
       } else {
         filtered.forEach((s, idx) => {
           const tr = document.createElement('tr');
@@ -728,7 +722,6 @@
             <td class="px-4 py-2.5 text-slate-400 text-xs">${idx + 1}</td>
             <td class="px-4 py-2.5 font-mono font-bold text-blue-700">${s.id}</td>
             <td class="px-4 py-2.5 font-medium text-slate-800">${s.name}</td>
-            <td class="px-4 py-2.5 text-xs"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border">${s.course}</span></td>
             <td class="px-4 py-2.5 text-xs text-slate-500">${s.source}</td>
           `;
           tbody.appendChild(tr);
@@ -834,9 +827,9 @@
         return;
       }
 
-      let csv = "Selection_No,Student_ID,Student_Name,Course_Year,Source_File\n";
+      let csv = "Selection_No,Student_ID,Student_Name,Source_File\n";
       sampledStudents.forEach((s, idx) => {
-        csv += `${idx + 1},"${s.id}","${s.name}","${s.course}","${s.source}"\n`;
+        csv += `${idx + 1},"${s.id}","${s.name}","${s.source}"\n`;
       });
 
       const blob = new Blob([csv], { type: 'text/csv' });
