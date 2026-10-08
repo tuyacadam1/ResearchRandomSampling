@@ -1,954 +1,816 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Research Sample Size Calculator & Student Sampler</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- PDF.js CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-    <script>
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-    </script>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Inter', sans-serif; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Research Sample Size & Multi-PDF Student ID Sampler</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <style>
+    .tab-active { border-bottom: 3px solid #2563eb; color: #2563eb; font-weight: 600; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: #f1f5f9; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
 </head>
-<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+<body class="bg-slate-50 text-slate-800 font-sans min-h-screen flex flex-col">
 
-    <!-- Navbar -->
-    <header class="bg-indigo-700 text-white shadow-lg sticky top-0 z-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <div class="bg-white text-indigo-700 p-2 rounded-lg shadow-sm">
-                    <i class="fa-solid fa-calculator text-xl"></i>
-                </div>
-                <div>
-                    <h1 class="font-bold text-lg sm:text-xl leading-tight">SampleStrat & Student Sampler</h1>
-                    <p class="text-xs text-indigo-200 hidden sm:block">Research Sample Determination & Random Selection Tool</p>
-                </div>
-            </div>
-            <div class="flex items-center space-x-2 text-xs sm:text-sm">
-                <span class="bg-indigo-800/60 text-indigo-100 px-3 py-1 rounded-full border border-indigo-500/30">
-                    <i class="fa-solid fa-graduation-cap mr-1"></i> Academic Research Tool
-                </span>
-            </div>
+  <!-- Navigation Bar -->
+  <header class="bg-slate-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-4">
+      <div class="flex items-center space-x-3">
+        <div class="bg-blue-600 p-2.5 rounded-lg text-white">
+          <i class="fa-solid fa-calculator text-xl"></i>
         </div>
-    </header>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 flex flex-col gap-6">
-
-        <!-- Top Overview Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/80 flex items-center space-x-4">
-                <div class="p-3 bg-blue-50 text-blue-600 rounded-lg">
-                    <i class="fa-solid fa-users text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500">Total Population (N)</p>
-                    <p id="statTotalN" class="text-2xl font-bold text-slate-800">232</p>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/80 flex items-center space-x-4">
-                <div class="p-3 bg-indigo-50 text-indigo-600 rounded-lg">
-                    <i class="fa-solid fa-user-check text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500">Target Sample (n)</p>
-                    <p id="statTotalNsample" class="text-2xl font-bold text-indigo-600">147</p>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/80 flex items-center space-x-4">
-                <div class="p-3 bg-amber-50 text-amber-600 rounded-lg">
-                    <i class="fa-solid fa-percent text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500">Margin of Error (e)</p>
-                    <p id="statMOE" class="text-2xl font-bold text-slate-800">5.0%</p>
-                </div>
-            </div>
-
-            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200/80 flex items-center space-x-4">
-                <div class="p-3 bg-emerald-50 text-emerald-600 rounded-lg">
-                    <i class="fa-solid fa-id-card text-2xl"></i>
-                </div>
-                <div>
-                    <p class="text-xs font-medium text-slate-500">Loaded Roster Students</p>
-                    <p id="statRosterCount" class="text-2xl font-bold text-slate-800">42</p>
-                </div>
-            </div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight">Research Sampler & PDF Extraction Tool</h1>
+          <p class="text-xs text-slate-400">Sample Size Calculation & Multi-PDF Student ID Selector</p>
         </div>
-
-        <!-- Tabs Bar -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-1 flex flex-wrap gap-1">
-            <button id="tabBtn1" onclick="switchTab('tab1')" class="flex-1 min-w-[140px] py-2.5 px-4 rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition-all bg-indigo-600 text-white shadow-sm">
-                <i class="fa-solid fa-calculator"></i>
-                <span>1. Sample Size Calculator</span>
-            </button>
-            <button id="tabBtn2" onclick="switchTab('tab2')" class="flex-1 min-w-[140px] py-2.5 px-4 rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
-                <i class="fa-solid fa-file-pdf"></i>
-                <span>2. Roster & ID Extraction</span>
-            </button>
-            <button id="tabBtn3" onclick="switchTab('tab3')" class="flex-1 min-w-[140px] py-2.5 px-4 rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100">
-                <i class="fa-solid fa-shuffle"></i>
-                <span>3. Random ID Selection & Export</span>
-            </button>
-        </div>
-
-        <!-- TAB 1 CONTENT -->
-        <div id="tab1Content" class="space-y-6">
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Controls & Table -->
-                <div class="lg:col-span-2 space-y-6">
-                    <!-- Config Panel -->
-                    <div class="bg-white rounded-xl p-5 shadow-sm border border-slate-200/80">
-                        <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4 mb-4 border-b border-slate-100">
-                            <div>
-                                <h2 class="text-base font-semibold text-slate-900">Formula & Parameters</h2>
-                                <p class="text-xs text-slate-500">Configure sampling formula and margin of error e.g. Slovin's Formula</p>
-                            </div>
-                            <button onclick="resetToImageDefaults()" class="text-xs bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-1.5 rounded-md font-medium transition flex items-center gap-1.5 self-start sm:self-auto">
-                                <i class="fa-solid fa-rotate-left"></i> Reset to Reference Image
-                            </button>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-700 mb-1">Sampling Method</label>
-                                <select id="formulaSelect" onchange="recalculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
-                                    <option value="slovins">Slovin's Formula [n = N / (1 + N·e²)]</option>
-                                    <option value="yamane">Taro Yamane Formula</option>
-                                    <option value="proportionate">Proportionate Stratified Sampling</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-medium text-slate-700 mb-1">Margin of Error (e)</label>
-                                <select id="moeSelect" onchange="recalculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
-                                    <option value="0.01">1% (e = 0.01)</option>
-                                    <option value="0.03">3% (e = 0.03)</option>
-                                    <option value="0.05" selected>5% (e = 0.05)</option>
-                                    <option value="0.10">10% (e = 0.10)</option>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-medium text-slate-700 mb-1">Rounding Rule</label>
-                                <select id="roundingSelect" onchange="recalculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 p-2.5">
-                                    <option value="nearest" selected>Standard Rounding</option>
-                                    <option value="ceil">Ceil (Round Up Always)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Strata Table -->
-                    <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 overflow-hidden">
-                        <div class="p-4 bg-slate-50 border-b border-slate-200/80 flex justify-between items-center">
-                            <div>
-                                <h3 class="font-semibold text-slate-800 text-sm">Table 1: Distribution of Respondents & Stratified Sample Size</h3>
-                                <p class="text-xs text-slate-500">Edit year levels or add custom population categories</p>
-                            </div>
-                            <button onclick="addStratumRow()" class="bg-indigo-600 hover:bg-indigo-700 text-white text-xs px-3 py-1.5 rounded-lg font-medium transition flex items-center gap-1 shadow-sm">
-                                <i class="fa-solid fa-plus"></i> Add Row
-                            </button>
-                        </div>
-
-                        <div class="overflow-x-auto">
-                            <table class="w-full text-sm text-left text-slate-700">
-                                <thead class="text-xs text-slate-600 uppercase bg-slate-100/70 border-b border-slate-200">
-                                    <tr>
-                                        <th scope="col" class="px-4 py-3">Academic Year Level / Category</th>
-                                        <th scope="col" class="px-4 py-3 text-center">Total Population (N)</th>
-                                        <th scope="col" class="px-4 py-3 text-center">Proportion (%)</th>
-                                        <th scope="col" class="px-4 py-3 text-center">Sample Size (n)</th>
-                                        <th scope="col" class="px-4 py-3 text-right">Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="strataTableBody" class="divide-y divide-slate-200">
-                                    <!-- Dynamic Rows -->
-                                </tbody>
-                                <tfoot class="bg-indigo-50/50 font-bold text-slate-900 border-t-2 border-indigo-200">
-                                    <tr>
-                                        <td class="px-4 py-3 text-indigo-900">Total</td>
-                                        <td id="footTotalN" class="px-4 py-3 text-center text-indigo-900">232</td>
-                                        <td id="footTotalProp" class="px-4 py-3 text-center text-indigo-900">100.0%</td>
-                                        <td id="footTotaln" class="px-4 py-3 text-center text-indigo-700 text-base">147</td>
-                                        <td></td>
-                                    </tr>
-                                </tfoot>
-                            </table>
-                        </div>
-                        <div class="p-3 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 italic">
-                            <i class="fa-solid fa-circle-info mr-1 text-indigo-500"></i>
-                            Note: Pre-populated values directly mirror the reference table (2nd Yr: 45→29, 3rd Yr: 93→59, 4th Yr: 94→59; Total: 232→147).
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Chart Side Panel -->
-                <div class="space-y-6">
-                    <div class="bg-white p-5 rounded-xl shadow-sm border border-slate-200/80 flex flex-col items-center">
-                        <div class="w-full flex justify-between items-center mb-4">
-                            <h3 class="font-semibold text-slate-800 text-sm">Population vs Sample Breakdown</h3>
-                            <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded font-medium">Chart</span>
-                        </div>
-                        <div class="w-full h-64 relative">
-                            <canvas id="strataChart"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="bg-indigo-950 text-white p-5 rounded-xl shadow-sm space-y-3">
-                        <h3 class="font-semibold text-indigo-200 text-sm flex items-center gap-2">
-                            <i class="fa-solid fa-lightbulb text-amber-400"></i> Sample Formula Explanation
-                        </h3>
-                        <p class="text-xs text-indigo-200 leading-relaxed">
-                            Using <strong class="text-white">Slovin's Formula</strong> with <strong class="text-white">N = 232</strong> and <strong class="text-white">e = 0.05</strong>:
-                        </p>
-                        <div class="bg-indigo-900/80 p-3 rounded-lg font-mono text-xs text-indigo-100 border border-indigo-700/50">
-                            n = N / (1 + N * e²)<br>
-                            n = 232 / (1 + 232 * 0.0025)<br>
-                            n = 232 / 1.58 = 146.835 ≈ <strong>147</strong>
-                        </div>
-                        <p class="text-xs text-indigo-300">
-                            Stratified proportions are calculated using <strong class="text-indigo-100">nᵢ = (Nᵢ / N) × n</strong> to ensure each stratum is accurately represented.
-                        </p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 2 CONTENT -->
-        <div id="tab2Content" class="space-y-6 hidden">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5 space-y-6">
-                <div class="flex flex-col md:flex-row justify-between md:items-center gap-4 pb-4 border-b border-slate-100">
-                    <div>
-                        <h2 class="text-base font-semibold text-slate-900">Student Roster Source & PDF/Text Extractor</h2>
-                        <p class="text-xs text-slate-500">Upload grade reports/PDF documents or paste raw rosters to parse Student IDs and Names</p>
-                    </div>
-                    <div class="flex items-center gap-2">
-                        <button onclick="loadSampleRoster()" class="bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-invoice text-indigo-600"></i> Load Sample "106 3B" PDF Data (42 Students)
-                        </button>
-                    </div>
-                </div>
-
-                <!-- File Upload / Drag Drop Box -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <div id="dropZone" class="border-2 border-dashed border-indigo-300 hover:border-indigo-500 bg-indigo-50/30 rounded-xl p-6 text-center cursor-pointer transition">
-                            <input type="file" id="fileInput" accept=".pdf,.txt,.csv" class="hidden" onchange="handleFileUpload(event)">
-                            <div class="flex flex-col items-center space-y-2">
-                                <div class="p-3 bg-indigo-100 text-indigo-600 rounded-full">
-                                    <i class="fa-solid fa-cloud-arrow-up text-2xl"></i>
-                                </div>
-                                <p class="text-sm font-semibold text-slate-700">Click to upload or drag & drop</p>
-                                <p class="text-xs text-slate-500">PDF Grade Reports, CSV, or TXT Files</p>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-semibold text-slate-700 mb-1">Or Paste Roster / Raw Grade Text directly:</label>
-                            <textarea id="rawTextInput" rows="6" placeholder="Paste grade report snippet or list of IDs here... e.g.&#10;1 | 23-G-0000430 Abad, Marielle V. | BSED-ENGL&#10;2 | 23-G-0000176 Abejo, Christine B. | BSED-ENGL" class="w-full text-xs font-mono p-3 bg-slate-50 border border-slate-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 custom-scrollbar"></textarea>
-                            <button onclick="parseRawText()" class="mt-2 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-xs py-2 rounded-lg font-medium transition flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-bolt"></i> Parse Text for IDs
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Parsed Preview Table -->
-                    <div class="space-y-3 flex flex-col">
-                        <div class="flex justify-between items-center">
-                            <h3 class="font-semibold text-slate-800 text-sm">Extracted Students List (<span id="parsedCount">0</span>)</h3>
-                            <button onclick="clearParsedRoster()" class="text-xs text-rose-600 hover:text-rose-800 font-medium">
-                                <i class="fa-solid fa-trash mr-1"></i>Clear List
-                            </button>
-                        </div>
-
-                        <div class="border border-slate-200 rounded-xl flex-1 min-h-[300px] max-h-[420px] overflow-y-auto custom-scrollbar bg-slate-50">
-                            <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-100 sticky top-0 border-b border-slate-200 text-slate-600 uppercase font-semibold">
-                                    <tr>
-                                        <th class="p-2.5">#</th>
-                                        <th class="p-2.5">Student ID No.</th>
-                                        <th class="p-2.5">Student Name</th>
-                                        <th class="p-2.5">Course / Year</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="parsedRosterTableBody" class="divide-y divide-slate-200 bg-white">
-                                    <!-- Dynamic rows -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- TAB 3 CONTENT -->
-        <div id="tab3Content" class="space-y-6 hidden">
-            <div class="bg-white rounded-xl shadow-sm border border-slate-200/80 p-5 space-y-6">
-                <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-4 pb-4 border-b border-slate-100">
-                    <div>
-                        <h2 class="text-base font-semibold text-slate-900">Random Respondent Selection Engine</h2>
-                        <p class="text-xs text-slate-500">Perform Simple Random Sampling to generate exact student respondents from extracted IDs</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="generateRandomSample()" class="bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-4 py-2 rounded-lg font-medium transition shadow-sm flex items-center gap-2">
-                            <i class="fa-solid fa-dice text-base"></i> Execute Random Draw
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Sampler Settings -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-200/80">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Target Sample Count to Select</label>
-                        <input type="number" id="sampleCountInput" min="1" max="500" value="27" class="w-full bg-white border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
-                        <span class="text-[10px] text-slate-500">Default set from 3rd Year sample ratio or loaded pool.</span>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Sampling Method</label>
-                        <select id="samplingType" class="w-full bg-white border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
-                            <option value="srs">Simple Random Sampling (SRS)</option>
-                            <option value="systematic">Systematic Random Sampling (k-interval)</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Seed / Repro Key (Optional)</label>
-                        <input type="text" id="seedInput" placeholder="e.g. RESEARCH_2026" class="w-full bg-white border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 focus:ring-indigo-500 focus:border-indigo-500">
-                    </div>
-                </div>
-
-                <!-- Results Display -->
-                <div class="space-y-4">
-                    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
-                        <h3 class="font-semibold text-slate-800 text-sm flex items-center gap-2">
-                            <span>Selected Respondents (<span id="selectedCountText">0</span>)</span>
-                            <span id="drawBadge" class="hidden text-xs bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full font-medium">
-                                <i class="fa-solid fa-circle-check mr-1"></i> Sample Selected
-                            </span>
-                        </h3>
-
-                        <div class="flex flex-wrap items-center gap-2">
-                            <input type="text" id="searchSelected" onkeyup="filterSelectedTable()" placeholder="Search Student ID/Name..." class="text-xs p-2 border border-slate-300 rounded-lg w-48">
-                            <button onclick="copyIDsToClipboard()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
-                                <i class="fa-regular fa-copy"></i> Copy IDs
-                            </button>
-                            <button onclick="exportToCSV()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs px-3 py-2 rounded-lg font-medium transition flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-csv text-emerald-600"></i> Export CSV
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="border border-slate-200 rounded-xl overflow-hidden shadow-sm">
-                        <div class="max-h-[400px] overflow-y-auto custom-scrollbar">
-                            <table class="w-full text-left text-xs">
-                                <thead class="bg-slate-100 sticky top-0 border-b border-slate-200 text-slate-600 uppercase font-semibold">
-                                    <tr>
-                                        <th class="p-3">Draw #</th>
-                                        <th class="p-3">Student ID</th>
-                                        <th class="p-3">Full Name</th>
-                                        <th class="p-3">Course / Year</th>
-                                        <th class="p-3">Status</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="selectedTableBody" class="divide-y divide-slate-200 bg-white">
-                                    <tr>
-                                        <td colspan="5" class="p-8 text-center text-slate-400 italic">
-                                            No sample drawn yet. Click "Execute Random Draw" above to select respondents.
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </main>
-
-    <!-- Custom Toast Message Modal -->
-    <div id="toast" class="fixed bottom-5 right-5 bg-slate-900 text-white text-xs px-4 py-3 rounded-lg shadow-xl opacity-0 transition-opacity duration-300 pointer-events-none z-50 flex items-center space-x-2">
-        <i id="toastIcon" class="fa-solid fa-info-circle text-indigo-400"></i>
-        <span id="toastMsg">Notification message</span>
+      </div>
+      <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
+        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+        <span>Multi-PDF Engine Ready</span>
+      </div>
     </div>
+  </header>
 
-    <!-- Footer -->
-    <footer class="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
-        <p>Research Sample Determination & Student Sampling Tool &bull; Designed for Academic Research & Stratified Sampling</p>
-    </footer>
+  <!-- Navigation Tabs -->
+  <div class="bg-white border-b border-slate-200 shadow-sm sticky top-0 z-20">
+    <div class="max-w-7xl mx-auto px-4 flex space-x-8 overflow-x-auto">
+      <button onclick="switchTab('calc')" id="tab-calc" class="tab-active py-3 px-1 text-sm flex items-center gap-2 whitespace-nowrap transition-all">
+        <i class="fa-solid fa-chart-pie"></i> 1. Population & Sample Size Calculator
+      </button>
+      <button onclick="switchTab('pdf')" id="tab-pdf" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all">
+        <i class="fa-solid fa-file-pdf"></i> 2. Upload Multiple PDFs / Data Source
+      </button>
+      <button onclick="switchTab('sampling')" id="tab-sampling" class="py-3 px-1 text-sm text-slate-500 hover:text-slate-800 flex items-center gap-2 whitespace-nowrap transition-all">
+        <i class="fa-solid fa-user-check"></i> 3. Random Student ID Sampler
+      </button>
+    </div>
+  </div>
 
-    <script>
-        /* -------------------------------------------------------------
-           DATA STATE & INITIAL DEFAULTS
-           ------------------------------------------------------------- */
-        // Default strata from user image (Table 1: Distribution of Respondents)
-        let strataData = [
-            { id: 1, yearLevel: "Second Year", N: 45, n: 29 },
-            { id: 2, yearLevel: "Third Year", N: 93, n: 59 },
-            { id: 3, yearLevel: "Fourth Year", N: 94, n: 59 }
-        ];
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 py-6 flex-1 w-full">
 
-        // Roster extracted from uploaded PDF / grade report "106 3B.pdf" (42 students)
-        const samplePDFData = [
-            { idNo: "23-G-0000430", name: "Abad, Marielle V.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000176", name: "Abejo, Christine B.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000091", name: "Aguhob, Kristine Jane G.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000314", name: "Amarante, Monalyn T.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000040", name: "Bacor, Rean M.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000458", name: "Baldivino, Nova Leah T.", course: "BSED-ENGL 3B" },
-            { idNo: "2111118",      name: "Baldo, Aimie Rose P.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000574", name: "Basanal, Marjorie G.", course: "BSED-ENGL 3B" },
-            { idNo: "2109743",      name: "Bernales, Jerry Marc D.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000486", name: "Binongkasan, Madelyn V.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000673", name: "Bulayog, Maria Desiree C.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000420", name: "Cadano, Chris Jericho P.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000070", name: "Cambalon, Judie Mae G.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000328", name: "Canunayon, John Louid A.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000613", name: "Cortes, Sheena Queen D.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000054", name: "Dadang, Roelyn D.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000276", name: "Dayaganon, Marjorie R.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000336", name: "De Leon, Angel B.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000817", name: "Elicay, Jenelyn E.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000781", name: "Elicay, William Xaniel D.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000333", name: "Escol, Maria Crecilia B.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000632", name: "Galario, Kent Daryl L.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000612", name: "Jaminal, Jeffrey T.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000576", name: "Lacre, Claire A.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000049", name: "Liloc, Queensil A.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000398", name: "Liwa, Jamby C.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000386", name: "Lomehoc, Steve Conrad D.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000463", name: "Madrinian, Charismae P.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000344", name: "Mandin, Mylene O.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000575", name: "Maputol, Rheylaine G.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000313", name: "Mejares, Jemarie", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000369", name: "Nuñez, Jenny-ann S.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000017", name: "Olaivar, Lovely Pearl C.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000427", name: "Olano, Blessie Marie L.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000451", name: "Pajo, Jinerose C.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000327", name: "Rañoa, Syndie B.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000123", name: "Rosil, Justin Mae R.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000396", name: "Sumalinog, Jazzin R.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000507", name: "Timtim, Glestin Keilah A.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000634", name: "Tirariray, Sharlyn C.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000480", name: "Torres, Charlyn D.", course: "BSED-ENGL 3B" },
-            { idNo: "23-G-0000092", name: "Ugsuban, Cherry Mae S.", course: "BSED-ENGL 3B" }
-        ];
+    <!-- TAB 1: CALCULATOR -->
+    <section id="sec-calc" class="space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Controls & Presets -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-lg font-bold text-slate-900 border-b pb-2 flex justify-between items-center">
+            <span>Sampling Parameters</span>
+            <button onclick="resetToImageValues()" class="text-xs text-blue-600 hover:underline flex items-center gap-1 font-normal">
+              <i class="fa-solid fa-rotate-left"></i> Reset Image Specs
+            </button>
+          </h2>
 
-        let parsedRoster = [...samplePDFData];
-        let selectedRespondents = [];
-        let strataChartObj = null;
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Formula Model</label>
+            <select id="formula-select" onchange="calculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 focus:ring-blue-500 focus:border-blue-500">
+              <option value="slovin">Slovin's Formula (n = N / (1 + N * e²))</option>
+              <option value="yamane">Yamane's Formula (n = N / (1 + N * e²))</option>
+            </select>
+          </div>
 
-        // Initialize App on DOM Load
-        window.addEventListener('DOMContentLoaded', () => {
-            renderStrataTable();
-            renderParsedRosterTable();
-            initChart();
-            recalculateAll();
-            setupDragAndDrop();
-        });
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Margin of Error (e)</label>
+            <div class="flex gap-2">
+              <input type="number" id="margin-of-error" value="0.05" step="0.01" min="0.01" max="0.20" onchange="calculateAll()" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <select onchange="document.getElementById('margin-of-error').value=this.value; calculateAll();" class="bg-slate-100 border border-slate-300 text-xs rounded-lg px-2">
+                <option value="0.01">1%</option>
+                <option value="0.03">3%</option>
+                <option value="0.05" selected>5%</option>
+                <option value="0.10">10%</option>
+              </select>
+            </div>
+            <p class="text-xs text-slate-500 mt-1">Default 0.05 (5%) matches standard educational research.</p>
+          </div>
 
-        /* -------------------------------------------------------------
-           NAVIGATION / TABS
-           ------------------------------------------------------------- */
-        function switchTab(tabId) {
-            ['tab1', 'tab2', 'tab3'].forEach(id => {
-                const content = document.getElementById(id + 'Content');
-                const btn = document.getElementById('tabBtn' + id.slice(-1));
-                if (id === tabId) {
-                    content.classList.remove('hidden');
-                    btn.className = "flex-1 min-w-[140px] py-2.5 px-4 rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition-all bg-indigo-600 text-white shadow-sm";
-                } else {
-                    content.classList.add('hidden');
-                    btn.className = "flex-1 min-w-[140px] py-2.5 px-4 rounded-lg font-medium text-sm flex items-center justify-center space-x-2 transition-all text-slate-600 hover:text-slate-900 hover:bg-slate-100";
-                }
-            });
-        }
+          <div class="pt-2">
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-2">Stratified Strata Input</label>
+            <div id="strata-container" class="space-y-2 max-h-56 overflow-y-auto pr-1 custom-scrollbar">
+              <!-- Strata rows will be dynamically added here -->
+            </div>
+            <button onclick="addStrataRow()" class="mt-3 w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-semibold flex items-center justify-center gap-1 border border-slate-300 transition-all">
+              <i class="fa-solid fa-plus"></i> Add Custom Year / Stratum
+            </button>
+          </div>
+        </div>
 
-        /* -------------------------------------------------------------
-           TAB 1 LOGIC: SAMPLE SIZE & STRATIFIED CALCULATIONS
-           ------------------------------------------------------------- */
-        function calculateSlovins(N, e) {
-            return N / (1 + N * Math.pow(e, 2));
-        }
+        <!-- Dynamic Results Table & Summary Cards -->
+        <div class="lg:col-span-2 space-y-6">
+          
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-center space-x-4">
+              <div class="p-3 bg-blue-600 text-white rounded-lg"><i class="fa-solid fa-users text-2xl"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-blue-800 uppercase">Total Target Pop. (N)</p>
+                <p class="text-2xl font-black text-blue-950" id="stat-total-n">232</p>
+              </div>
+            </div>
 
-        function recalculateAll() {
-            const moe = parseFloat(document.getElementById('moeSelect').value);
-            const formula = document.getElementById('formulaSelect').value;
-            const rounding = document.getElementById('roundingSelect').value;
+            <div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 flex items-center space-x-4">
+              <div class="p-3 bg-emerald-600 text-white rounded-lg"><i class="fa-solid fa-user-check text-2xl"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-emerald-800 uppercase">Required Sample (n)</p>
+                <p class="text-2xl font-black text-emerald-950" id="stat-total-sample">147</p>
+              </div>
+            </div>
 
-            document.getElementById('statMOE').textContent = (moe * 100).toFixed(1) + '%';
+            <div class="bg-purple-50 border border-purple-200 rounded-xl p-4 flex items-center space-x-4">
+              <div class="p-3 bg-purple-600 text-white rounded-lg"><i class="fa-solid fa-percent text-2xl"></i></div>
+              <div>
+                <p class="text-xs font-semibold text-purple-800 uppercase">Sampling Ratio</p>
+                <p class="text-2xl font-black text-purple-950" id="stat-ratio">63.36%</p>
+              </div>
+            </div>
+          </div>
 
-            // Total Population N
-            const totalN = strataData.reduce((sum, item) => sum + (parseInt(item.N) || 0), 0);
-            document.getElementById('statTotalN').textContent = totalN;
-            document.getElementById('footTotalN').textContent = totalN;
+          <!-- Distribution Table -->
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center">
+              <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                <i class="fa-solid fa-table"></i> Stratified Respondent Distribution Table
+              </h3>
+              <span class="text-xs bg-blue-100 text-blue-800 px-2.5 py-1 rounded-full font-medium">Auto-Calculated</span>
+            </div>
+            <div class="overflow-x-auto">
+              <table class="w-full text-sm text-left text-slate-600">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-100 border-b">
+                  <tr>
+                    <th scope="col" class="px-6 py-3">Academic Year Level / Strata</th>
+                    <th scope="col" class="px-6 py-3 text-center">Total Population (N)</th>
+                    <th scope="col" class="px-6 py-3 text-center">Proportion (%)</th>
+                    <th scope="col" class="px-6 py-3 text-center bg-blue-50 text-blue-900">Sample Size (n)</th>
+                  </tr>
+                </thead>
+                <tbody id="calc-table-body" class="divide-y divide-slate-200">
+                  <!-- Generated Rows -->
+                </tbody>
+                <tfoot class="bg-slate-100 font-bold text-slate-900 border-t-2 border-slate-300">
+                  <tr>
+                    <th class="px-6 py-3">Total</th>
+                    <td class="px-6 py-3 text-center" id="foot-total-n">232</td>
+                    <td class="px-6 py-3 text-center">100.0%</td>
+                    <td class="px-6 py-3 text-center bg-blue-100 text-blue-900" id="foot-total-sample">147</td>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
 
-            // Target total sample size n
-            let rawTotaln = 0;
-            if (formula === 'slovins' || formula === 'yamane') {
-                rawTotaln = calculateSlovins(totalN, moe);
-            } else {
-                rawTotaln = totalN * 0.60; // Proportionate ratio
-            }
+          <!-- Chart Visualization -->
+          <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <h3 class="font-bold text-slate-800 text-sm mb-4">Population vs Sample Size Visualization</h3>
+            <div class="h-56">
+              <canvas id="strataChart"></canvas>
+            </div>
+          </div>
 
-            let roundedTotaln = rounding === 'ceil' ? Math.ceil(rawTotaln) : Math.round(rawTotaln);
+        </div>
+      </div>
+    </section>
 
-            // Special override for default image exact state when using 5% Slovin's on 232
-            const isImageDefault = (totalN === 232 && moe === 0.05 && formula === 'slovins');
-            
-            // Calculate proportional sample size per stratum
-            let allocatedSum = 0;
-            strataData.forEach((item, idx) => {
-                const prop = totalN > 0 ? (item.N / totalN) : 0;
-                item.propVal = (prop * 100).toFixed(1) + '%';
+    <!-- TAB 2: MULTI-PDF UPLOAD & DATA PARSER -->
+    <section id="sec-pdf" class="hidden space-y-6">
+      <div class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">Upload Grade Reports & Documents</h2>
+          <p class="text-sm text-slate-500">Upload <strong>multiple PDF files at once</strong> (e.g. section rosters like 106 3B.pdf), TXT, or CSV files to extract student IDs into a unified pool.</p>
+        </div>
 
-                if (isImageDefault) {
-                    // Exact match to Table 1 in reference image: 45->29, 93->59, 94->59
-                    if (idx === 0) item.n = 29;
-                    if (idx === 1) item.n = 59;
-                    if (idx === 2) item.n = 59;
-                } else {
-                    let calculated_ni = prop * roundedTotaln;
-                    item.n = rounding === 'ceil' ? Math.ceil(calculated_ni) : Math.round(calculated_ni);
-                }
-                allocatedSum += item.n;
-            });
+        <!-- Drag & Drop Zone -->
+        <div id="drop-zone" class="border-2 border-dashed border-blue-300 bg-blue-50/50 hover:bg-blue-50 transition-all rounded-xl p-8 text-center cursor-pointer flex flex-col items-center justify-center space-y-3">
+          <div class="p-4 bg-blue-100 text-blue-600 rounded-full">
+            <i class="fa-solid fa-cloud-arrow-up text-3xl"></i>
+          </div>
+          <div>
+            <p class="text-sm font-semibold text-slate-800">Click to select or drag & drop multiple files here</p>
+            <p class="text-xs text-slate-500 mt-1">Supports batch PDFs, Grade Reports, CSV, TXT files</p>
+          </div>
+          <input type="file" id="pdf-file-input" multiple accept=".pdf,.txt,.csv" class="hidden" onchange="handleFileSelect(event)">
+        </div>
 
-            const finalTotaln = isImageDefault ? 147 : allocatedSum;
+        <!-- Uploaded Files List Component -->
+        <div id="uploaded-files-container" class="hidden space-y-2">
+          <h3 class="text-xs font-semibold text-slate-600 uppercase tracking-wider">Uploaded Files Stack</h3>
+          <div id="file-list" class="space-y-1.5 max-h-40 overflow-y-auto custom-scrollbar">
+            <!-- Dynamic File Items -->
+          </div>
+        </div>
 
-            document.getElementById('statTotalNsample').textContent = finalTotaln;
-            document.getElementById('footTotaln').textContent = finalTotaln;
+        <!-- Extraction Controls -->
+        <div class="flex flex-wrap items-center justify-between gap-4 pt-2 border-t">
+          <div class="flex items-center space-x-2">
+            <span class="text-sm font-medium text-slate-700">Filter Year/Section Regex:</span>
+            <input type="text" id="filter-keyword" placeholder="e.g., BSED-ENGL 3B" oninput="renderParsedTable()" class="bg-slate-50 border border-slate-300 rounded-lg px-3 py-1.5 text-xs w-48">
+          </div>
 
-            // Update tab 3 sample count input
-            document.getElementById('sampleCountInput').value = Math.min(finalTotaln, parsedRoster.length || finalTotaln);
+          <div class="flex items-center space-x-2">
+            <button onclick="loadSampleData()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-medium transition-all">
+              <i class="fa-solid fa-flask"></i> Reload Default Sample Roster
+            </button>
+            <button onclick="clearAllData()" class="px-3 py-1.5 bg-rose-100 hover:bg-rose-200 text-rose-700 rounded-lg text-xs font-medium transition-all">
+              <i class="fa-solid fa-trash"></i> Clear All Loaded Roster Data
+            </button>
+          </div>
+        </div>
+      </div>
 
-            renderStrataTable();
-            updateChart();
-        }
+      <!-- Extracted Roster Display -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+        <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
+          <div>
+            <h3 class="font-bold text-slate-800 text-sm">Extracted Student Masterlist Pool</h3>
+            <p class="text-xs text-slate-500">Extracted student IDs and details ready for random sampling</p>
+          </div>
+          <span class="text-xs bg-emerald-100 text-emerald-800 font-semibold px-3 py-1 rounded-full" id="extracted-count-badge">0 Students Loaded</span>
+        </div>
 
-        function renderStrataTable() {
-            const tbody = document.getElementById('strataTableBody');
-            tbody.innerHTML = '';
+        <div class="overflow-x-auto max-h-96 custom-scrollbar">
+          <table class="w-full text-sm text-left text-slate-600">
+            <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
+              <tr>
+                <th scope="col" class="px-4 py-3">#</th>
+                <th scope="col" class="px-4 py-3">Student ID</th>
+                <th scope="col" class="px-4 py-3">Student Name</th>
+                <th scope="col" class="px-4 py-3">Course / Year / Section</th>
+                <th scope="col" class="px-4 py-3">Source File</th>
+              </tr>
+            </thead>
+            <tbody id="extracted-table-body" class="divide-y divide-slate-200">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
 
-            strataData.forEach((item, index) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition";
-                tr.innerHTML = `
-                    <td class="px-4 py-3 font-medium">
-                        <input type="text" value="${item.yearLevel}" onchange="updateRowLabel(${index}, this.value)" class="w-full bg-transparent border-b border-transparent hover:border-slate-300 focus:border-indigo-500 text-slate-800 text-sm font-medium focus:outline-none px-1">
+    <!-- TAB 3: SAMPLING & GENERATOR -->
+    <section id="sec-sampling" class="hidden space-y-6">
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Controls -->
+        <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm space-y-4">
+          <h2 class="text-lg font-bold text-slate-900 border-b pb-2">Sampling Execution</h2>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Target Sample Size</label>
+            <input type="number" id="sample-target-input" value="59" min="1" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5 font-bold">
+            <p class="text-xs text-slate-500 mt-1">Preset based on Tab 1 calculation or enter custom quota.</p>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Sampling Method</label>
+            <select id="sampling-method" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <option value="srs">Simple Random Sampling (SRS - Unbiased RNG)</option>
+              <option value="systematic">Systematic Random Sampling (k = N/n interval)</option>
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider mb-1">Filter by Year Level / Class</label>
+            <select id="sample-strata-filter" class="w-full bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-lg p-2.5">
+              <option value="all">All Extracted Students in Pool</option>
+              <option value="BSED-ENGL 3B" selected>BSED-ENGL 3B (Third Year)</option>
+            </select>
+          </div>
+
+          <button onclick="executeSampling()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-lg shadow transition-all flex items-center justify-center gap-2">
+            <i class="fa-solid fa-dice"></i> Generate Random Selected Respondents
+          </button>
+        </div>
+
+        <!-- Sampled Output Table -->
+        <div class="lg:col-span-2 space-y-4">
+          <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
+            <div class="p-4 bg-slate-50 border-b border-slate-200 flex justify-between items-center flex-wrap gap-2">
+              <div>
+                <h3 class="font-bold text-slate-800 text-sm">Selected Respondents List</h3>
+                <p class="text-xs text-slate-500" id="sampling-status-text">Click "Generate" to draw respondents</p>
+              </div>
+              <div class="flex space-x-2">
+                <button onclick="copySelectedIDs()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-medium rounded-lg transition-all flex items-center gap-1">
+                  <i class="fa-solid fa-copy"></i> Copy Student IDs
+                </button>
+                <button onclick="exportSampleCSV()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium rounded-lg transition-all flex items-center gap-1 shadow-sm">
+                  <i class="fa-solid fa-file-csv"></i> Download CSV
+                </button>
+              </div>
+            </div>
+
+            <div class="overflow-x-auto max-h-96 custom-scrollbar">
+              <table class="w-full text-sm text-left text-slate-600">
+                <thead class="text-xs text-slate-700 uppercase bg-slate-100 sticky top-0">
+                  <tr>
+                    <th scope="col" class="px-4 py-3">Selection #</th>
+                    <th scope="col" class="px-4 py-3">Student ID</th>
+                    <th scope="col" class="px-4 py-3">Student Name</th>
+                    <th scope="col" class="px-4 py-3">Course / Year</th>
+                    <th scope="col" class="px-4 py-3 text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody id="sampled-table-body" class="divide-y divide-slate-200">
+                  <tr>
+                    <td colspan="5" class="px-4 py-8 text-center text-slate-400">
+                      No sample drawn yet. Click "Generate Random Selected Respondents" above.
                     </td>
-                    <td class="px-4 py-3 text-center">
-                        <input type="number" min="0" value="${item.N}" onchange="updateRowN(${index}, this.value)" class="w-20 text-center bg-slate-50 border border-slate-300 text-slate-800 text-sm rounded-md p-1 focus:ring-indigo-500 focus:border-indigo-500">
-                    </td>
-                    <td class="px-4 py-3 text-center text-slate-500 text-xs">${item.propVal || '0%'}</td>
-                    <td class="px-4 py-3 text-center font-bold text-indigo-600">${item.n || 0}</td>
-                    <td class="px-4 py-3 text-right">
-                        <button onclick="removeStratumRow(${index})" class="text-rose-500 hover:text-rose-700 p-1" title="Delete Row">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
 
-        function updateRowLabel(index, val) {
-            strataData[index].yearLevel = val;
-            updateChart();
-        }
+      </div>
+    </section>
 
-        function updateRowN(index, val) {
-            strataData[index].N = parseInt(val) || 0;
-            recalculateAll();
-        }
+  </main>
 
-        function addStratumRow() {
-            strataData.push({
-                id: Date.now(),
-                yearLevel: `New Category ${strataData.length + 1}`,
-                N: 50,
-                n: 0
-            });
-            recalculateAll();
-            showToast("Added new stratum category row");
-        }
+  <script>
+    // Config PDF.js Worker
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
-        function removeStratumRow(index) {
-            if (strataData.length <= 1) {
-                showToast("At least one stratum is required.", "error");
-                return;
+    // App State
+    let strataData = [
+      { id: 1, name: "Second Year", population: 45 },
+      { id: 2, name: "Third Year", population: 93 },
+      { id: 3, name: "Fourth Year", population: 94 }
+    ];
+
+    let extractedStudents = [];
+    let sampledStudents = [];
+    let uploadedFilesList = [];
+    let myChart = null;
+
+    // Initial Data from PDF (106 3B.pdf)
+    const defaultRoster = [
+      { id: "23-G-0000430", name: "Abad, Marielle V.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000176", name: "Abejo, Christine B.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000091", name: "Aguhob, Kristine Jane G.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000314", name: "Amarante, Monalyn T.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000040", name: "Bacor, Rean M.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000458", name: "Baldivino, Nova Leah T.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "2111118", name: "Baldo, Aimie Rose P.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000574", name: "Basanal, Marjorie G.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "2109743", name: "Bernales, Jerry Marc D.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000486", name: "Binongkasan, Madelyn V.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000673", name: "Bulayog, Maria Desiree C.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000420", name: "Cadano, Chris Jericho P.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000070", name: "Cambalon, Judie Mae G.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000328", name: "Canunayon, John Louid A.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000613", name: "Cortes, Sheena Queen D.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000054", name: "Dadang, Roelyn D.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000276", name: "Dayaganon, Marjorie R.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000336", name: "De Leon, Angel B.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000817", name: "Elicay, Jenelyn E.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000781", name: "Elicay, William Xaniel D.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000333", name: "Escol, Maria Crecilia B.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000632", name: "Galario, Kent Daryl L.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000612", name: "Jaminal, Jeffrey T.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000576", name: "Lacre, Claire A.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000049", name: "Liloc, Queensil A.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000398", name: "Liwa, Jamby C.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000386", name: "Lomehoc, Steve Conrad D.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000463", name: "Madrinian, Charismae P.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000344", name: "Mandin, Mylene O.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000575", name: "Maputol, Rheylaine G.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000313", name: "Mejares, Jemarie", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000369", name: "Nuñez, Jenny-ann S.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000017", name: "Olaivar, Lovely Pearl C.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000427", name: "Olano, Blessie Marie L.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000451", name: "Pajo, Jinerose C.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000327", name: "Rañoa, Syndie B.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000123", name: "Rosil, Justin Mae R.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000396", name: "Sumalinog, Jazzin R.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000507", name: "Timtim, Glestin Keilah A.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000634", name: "Tirariray, Sharlyn C.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000480", name: "Torres, Charlyn D.", course: "BSED-ENGL 3B", source: "106 3B.pdf" },
+      { id: "23-G-0000092", name: "Ugsuban, Cherry Mae S.", course: "BSED-ENGL 3B", source: "106 3B.pdf" }
+    ];
+
+    // Initialization
+    window.addEventListener('DOMContentLoaded', () => {
+      renderStrataInputs();
+      calculateAll();
+      loadSampleData();
+      setupDragAndDrop();
+    });
+
+    // Navigation Switcher
+    function switchTab(tab) {
+      ['calc', 'pdf', 'sampling'].forEach(t => {
+        document.getElementById(`sec-${t}`).classList.add('hidden');
+        document.getElementById(`tab-${t}`).classList.remove('tab-active');
+        document.getElementById(`tab-${t}`).classList.add('text-slate-500');
+      });
+      document.getElementById(`sec-${tab}`).classList.remove('hidden');
+      document.getElementById(`tab-${tab}`).classList.add('tab-active');
+      document.getElementById(`tab-${tab}`).classList.remove('text-slate-500');
+    }
+
+    // Strata Inputs
+    function renderStrataInputs() {
+      const container = document.getElementById('strata-container');
+      container.innerHTML = '';
+      strataData.forEach((s, idx) => {
+        const div = document.createElement('div');
+        div.className = "flex items-center gap-2";
+        div.innerHTML = `
+          <input type="text" value="${s.name}" onchange="updateStrataName(${s.id}, this.value)" class="bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/2">
+          <input type="number" value="${s.population}" min="1" onchange="updateStrataPop(${s.id}, this.value)" class="bg-slate-50 border border-slate-300 rounded-lg p-2 text-xs w-1/3">
+          ${strataData.length > 1 ? `<button onclick="removeStrata(${s.id})" class="text-rose-500 hover:text-rose-700 p-1"><i class="fa-solid fa-xmark"></i></button>` : ''}
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function addStrataRow() {
+      const newId = strataData.length ? Math.max(...strataData.map(s => s.id)) + 1 : 1;
+      strataData.push({ id: newId, name: `Year Level ${newId}`, population: 50 });
+      renderStrataInputs();
+      calculateAll();
+    }
+
+    function removeStrata(id) {
+      strataData = strataData.filter(s => s.id !== id);
+      renderStrataInputs();
+      calculateAll();
+    }
+
+    function updateStrataName(id, val) {
+      const item = strataData.find(s => s.id === id);
+      if (item) item.name = val;
+      calculateAll();
+    }
+
+    function updateStrataPop(id, val) {
+      const item = strataData.find(s => s.id === id);
+      if (item) item.population = parseInt(val) || 0;
+      calculateAll();
+    }
+
+    function resetToImageValues() {
+      strataData = [
+        { id: 1, name: "Second Year", population: 45 },
+        { id: 2, name: "Third Year", population: 93 },
+        { id: 3, name: "Fourth Year", population: 94 }
+      ];
+      document.getElementById('margin-of-error').value = "0.05";
+      renderStrataInputs();
+      calculateAll();
+    }
+
+    // Calculation Engine
+    function calculateAll() {
+      const e = parseFloat(document.getElementById('margin-of-error').value) || 0.05;
+      const totalN = strataData.reduce((sum, s) => sum + s.population, 0);
+
+      let totalSample = 0;
+      if (totalN > 0) {
+        // Slovin's Formula: n = N / (1 + N * e^2)
+        totalSample = Math.round(totalN / (1 + (totalN * (e * e))));
+      }
+
+      // Render Table Rows
+      const tbody = document.getElementById('calc-table-body');
+      tbody.innerHTML = '';
+
+      const chartLabels = [];
+      const chartPop = [];
+      const chartSample = [];
+
+      strataData.forEach(s => {
+        const prop = totalN > 0 ? (s.population / totalN) : 0;
+        const stratumSample = Math.round(prop * totalSample);
+
+        chartLabels.push(s.name);
+        chartPop.push(s.population);
+        chartSample.push(stratumSample);
+
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="px-6 py-3 font-semibold text-slate-800">${s.name}</td>
+          <td class="px-6 py-3 text-center">${s.population}</td>
+          <td class="px-6 py-3 text-center">${(prop * 100).toFixed(2)}%</td>
+          <td class="px-6 py-3 text-center bg-blue-50/50 font-bold text-blue-800">${stratumSample}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      // Update Summary Cards & Footers
+      document.getElementById('stat-total-n').innerText = totalN;
+      document.getElementById('stat-total-sample').innerText = totalSample;
+      document.getElementById('stat-ratio').innerText = totalN > 0 ? ((totalSample / totalN) * 100).toFixed(2) + '%' : '0%';
+      document.getElementById('foot-total-n').innerText = totalN;
+      document.getElementById('foot-total-sample').innerText = totalSample;
+
+      // Update Sampling Tab Target
+      document.getElementById('sample-target-input').value = totalSample;
+
+      renderChart(chartLabels, chartPop, chartSample);
+    }
+
+    function renderChart(labels, popData, sampleData) {
+      const ctx = document.getElementById('strataChart').getContext('2d');
+      if (myChart) myChart.destroy();
+
+      myChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: 'Total Population (N)',
+              data: popData,
+              backgroundColor: 'rgba(148, 163, 184, 0.7)',
+              borderColor: '#64748b',
+              borderWidth: 1
+            },
+            {
+              label: 'Sample Size (n)',
+              data: sampleData,
+              backgroundColor: 'rgba(37, 99, 235, 0.85)',
+              borderColor: '#1d4ed8',
+              borderWidth: 1
             }
-            strataData.splice(index, 1);
-            recalculateAll();
-            showToast("Stratum removed");
+          ]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: {
+            legend: { position: 'top' }
+          },
+          scales: {
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    // MULTI-PDF UPLOADER & DRAG-DROP
+    function setupDragAndDrop() {
+      const dropZone = document.getElementById('drop-zone');
+      dropZone.addEventListener('click', () => document.getElementById('pdf-file-input').click());
+
+      ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, preventDefaults, false);
+      });
+
+      function preventDefaults(e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      ['dragenter', 'dragover'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.add('bg-blue-100', 'border-blue-500'), false);
+      });
+
+      ['dragleave', 'drop'].forEach(eventName => {
+        dropZone.addEventListener(eventName, () => dropZone.classList.remove('bg-blue-100', 'border-blue-500'), false);
+      });
+
+      dropZone.addEventListener('drop', (e) => {
+        const dt = e.dataTransfer;
+        const files = dt.files;
+        handleFiles(files);
+      });
+    }
+
+    function handleFileSelect(event) {
+      const files = event.target.files;
+      handleFiles(files);
+    }
+
+    async function handleFiles(files) {
+      if (!files || files.length === 0) return;
+
+      const fileContainer = document.getElementById('uploaded-files-container');
+      const fileList = document.getElementById('file-list');
+      fileContainer.classList.remove('hidden');
+
+      for (let file of files) {
+        const fileId = Date.now() + Math.random().toString(36).substring(2, 5);
+        uploadedFilesList.push({ id: fileId, name: file.name, file: file });
+
+        const item = document.createElement('div');
+        item.id = `file-item-${fileId}`;
+        item.className = "flex items-center justify-between bg-slate-100 px-3 py-1.5 rounded-lg text-xs";
+        item.innerHTML = `
+          <div class="flex items-center space-x-2 truncate">
+            <i class="fa-solid fa-file-pdf text-red-500"></i>
+            <span class="font-medium text-slate-700 truncate">${file.name}</span>
+            <span class="text-slate-400">(${Math.round(file.size / 1024)} KB)</span>
+          </div>
+          <span class="text-blue-600 font-semibold" id="status-${fileId}"><i class="fa-solid fa-spinner animate-spin"></i> Processing...</span>
+        `;
+        fileList.appendChild(item);
+
+        // Process File
+        await processSingleFile(file, fileId);
+      }
+    }
+
+    async function processSingleFile(file, fileId) {
+      try {
+        if (file.name.endsWith('.pdf')) {
+          const arrayBuffer = await file.arrayBuffer();
+          const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          let fullText = '';
+
+          for (let i = 1; i <= pdf.numPages; i++) {
+            const page = await pdf.getPage(i);
+            const textContent = await page.getTextContent();
+            const pageText = textContent.items.map(item => item.str).join(' ');
+            fullText += ' ' + pageText;
+          }
+
+          parseExtractedText(fullText, file.name);
+        } else {
+          // Plain Text or CSV
+          const text = await file.text();
+          parseExtractedText(text, file.name);
         }
 
-        function resetToImageDefaults() {
-            strataData = [
-                { id: 1, yearLevel: "Second Year", N: 45, n: 29 },
-                { id: 2, yearLevel: "Third Year", N: 93, n: 59 },
-                { id: 3, yearLevel: "Fourth Year", N: 94, n: 59 }
-            ];
-            document.getElementById('formulaSelect').value = 'slovins';
-            document.getElementById('moeSelect').value = '0.05';
-            document.getElementById('roundingSelect').value = 'nearest';
-            recalculateAll();
-            showToast("Reset data back to reference image values (Total N=232, n=147)");
+        document.getElementById(`status-${fileId}`).innerHTML = `<span class="text-emerald-600"><i class="fa-solid fa-check"></i> Loaded</span>`;
+      } catch (err) {
+        console.error("PDF Parse error", err);
+        document.getElementById(`status-${fileId}`).innerHTML = `<span class="text-rose-600"><i class="fa-solid fa-triangle-exclamation"></i> Error</span>`;
+      }
+    }
+
+    function parseExtractedText(text, fileName) {
+      // Regex pattern for Student IDs (e.g., 23-G-0000430, 2111118, or similar formats)
+      const idRegex = /(2\d-G-\d{7}|\d{7})/g;
+      const matches = text.match(idRegex) || [];
+      const uniqueMatches = [...new Set(matches)];
+
+      uniqueMatches.forEach((id, index) => {
+        // Prevent duplicate IDs across multiple files
+        if (!extractedStudents.some(s => s.id === id)) {
+          extractedStudents.push({
+            id: id,
+            name: `Student (${id})`,
+            course: "BSED-ENGL",
+            source: fileName
+          });
         }
+      });
 
-        /* -------------------------------------------------------------
-           CHART.JS VISUALIZATION
-           ------------------------------------------------------------- */
-        function initChart() {
-            const ctx = document.getElementById('strataChart').getContext('2d');
-            strataChartObj = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: strataData.map(d => d.yearLevel),
-                    datasets: [
-                        {
-                            label: 'Total Population (N)',
-                            data: strataData.map(d => d.N),
-                            backgroundColor: '#93c5fd',
-                            borderRadius: 6
-                        },
-                        {
-                            label: 'Sample Size (n)',
-                            data: strataData.map(d => d.n),
-                            backgroundColor: '#4f46e5',
-                            borderRadius: 6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
-                    },
-                    scales: {
-                        y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
-                        x: { grid: { display: false } }
-                    }
-                }
-            });
+      renderParsedTable();
+    }
+
+    function loadSampleData() {
+      extractedStudents = [...defaultRoster];
+      uploadedFilesList = [];
+      document.getElementById('uploaded-files-container').classList.add('hidden');
+      document.getElementById('file-list').innerHTML = '';
+      renderParsedTable();
+    }
+
+    function clearAllData() {
+      extractedStudents = [];
+      uploadedFilesList = [];
+      document.getElementById('uploaded-files-container').classList.add('hidden');
+      document.getElementById('file-list').innerHTML = '';
+      renderParsedTable();
+    }
+
+    function renderParsedTable() {
+      const keyword = document.getElementById('filter-keyword').value.toLowerCase();
+      const filtered = extractedStudents.filter(s => 
+        s.id.toLowerCase().includes(keyword) || 
+        s.name.toLowerCase().includes(keyword) || 
+        s.course.toLowerCase().includes(keyword) ||
+        s.source.toLowerCase().includes(keyword)
+      );
+
+      const tbody = document.getElementById('extracted-table-body');
+      tbody.innerHTML = '';
+
+      filtered.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-slate-50";
+        tr.innerHTML = `
+          <td class="px-4 py-2.5 text-slate-400 text-xs">${idx + 1}</td>
+          <td class="px-4 py-2.5 font-mono font-bold text-blue-700">${s.id}</td>
+          <td class="px-4 py-2.5 font-medium text-slate-800">${s.name}</td>
+          <td class="px-4 py-2.5 text-xs"><span class="bg-slate-100 text-slate-700 px-2 py-0.5 rounded border">${s.course}</span></td>
+          <td class="px-4 py-2.5 text-xs text-slate-500">${s.source}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById('extracted-count-badge').innerText = `${extractedStudents.length} Students Extracted`;
+      updateStrataFilterOptions();
+    }
+
+    function updateStrataFilterOptions() {
+      const filterSelect = document.getElementById('sample-strata-filter');
+      const courses = [...new Set(extractedStudents.map(s => s.course))];
+      
+      filterSelect.innerHTML = '<option value="all">All Extracted Students in Pool</option>';
+      courses.forEach(c => {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.innerText = `${c} (${extractedStudents.filter(s => s.course === c).length} students)`;
+        filterSelect.appendChild(opt);
+      });
+    }
+
+    // RANDOM SAMPLING GENERATOR
+    function executeSampling() {
+      const targetSize = parseInt(document.getElementById('sample-target-input').value) || 10;
+      const method = document.getElementById('sampling-method').value;
+      const filter = document.getElementById('sample-strata-filter').value;
+
+      let pool = filter === 'all' ? [...extractedStudents] : extractedStudents.filter(s => s.course === filter);
+
+      if (pool.length === 0) {
+        alert("No students available in the selected pool!");
+        return;
+      }
+
+      sampledStudents = [];
+
+      if (method === 'srs') {
+        // Simple Random Sampling (Fisher-Yates Shuffle)
+        let shuffled = [...pool];
+        for (let i = shuffled.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
+        sampledStudents = shuffled.slice(0, Math.min(targetSize, pool.length));
+      } else {
+        // Systematic Random Sampling
+        const N = pool.length;
+        const n = Math.min(targetSize, N);
+        const k = Math.max(1, Math.floor(N / n));
+        const start = Math.floor(Math.random() * k);
 
-        function updateChart() {
-            if (!strataChartObj) return;
-            strataChartObj.data.labels = strataData.map(d => d.yearLevel);
-            strataChartObj.data.datasets[0].data = strataData.map(d => d.N);
-            strataChartObj.data.datasets[1].data = strataData.map(d => d.n);
-            strataChartObj.update();
+        for (let i = 0; i < n; i++) {
+          const idx = (start + i * k) % N;
+          sampledStudents.push(pool[idx]);
         }
+      }
 
-        /* -------------------------------------------------------------
-           TAB 2 LOGIC: PDF PARSING & TEXT EXTRACTION
-           ------------------------------------------------------------- */
-        function setupDragAndDrop() {
-            const dz = document.getElementById('dropZone');
-            dz.addEventListener('click', () => document.getElementById('fileInput').click());
-            dz.addEventListener('dragover', (e) => { e.preventDefault(); dz.classList.add('border-indigo-600', 'bg-indigo-100/50'); });
-            dz.addEventListener('dragleave', () => { dz.classList.remove('border-indigo-600', 'bg-indigo-100/50'); });
-            dz.addEventListener('drop', (e) => {
-                e.preventDefault();
-                dz.classList.remove('border-indigo-600', 'bg-indigo-100/50');
-                if (e.dataTransfer.files.length) {
-                    handleFileUpload({ target: { files: e.dataTransfer.files } });
-                }
-            });
-        }
+      renderSampledTable();
+    }
 
-        async function handleFileUpload(event) {
-            const file = event.target.files[0];
-            if (!file) return;
+    function renderSampledTable() {
+      const tbody = document.getElementById('sampled-table-body');
+      tbody.innerHTML = '';
 
-            showToast(`Processing file: ${file.name}...`);
+      sampledStudents.forEach((s, idx) => {
+        const tr = document.createElement('tr');
+        tr.className = "hover:bg-blue-50/50";
+        tr.innerHTML = `
+          <td class="px-4 py-2.5 font-bold text-slate-500">${idx + 1}</td>
+          <td class="px-4 py-2.5 font-mono font-bold text-emerald-700">${s.id}</td>
+          <td class="px-4 py-2.5 font-semibold text-slate-800">${s.name}</td>
+          <td class="px-4 py-2.5 text-xs text-slate-600">${s.course}</td>
+          <td class="px-4 py-2.5 text-center"><span class="bg-emerald-100 text-emerald-800 text-xs px-2 py-0.5 rounded-full font-medium">Selected</span></td>
+        `;
+        tbody.appendChild(tr);
+      });
 
-            if (file.type === 'application/pdf') {
-                parsePDFFile(file);
-            } else {
-                const text = await file.text();
-                extractStudentIDsFromText(text);
-            }
-        }
+      document.getElementById('sampling-status-text').innerText = `Successfully sampled ${sampledStudents.length} respondents.`;
+    }
 
-        async function parsePDFFile(file) {
-            try {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-                let fullText = "";
+    // EXPORT FUNCTIONS
+    function copySelectedIDs() {
+      if (sampledStudents.length === 0) {
+        alert("No sampled students to copy!");
+        return;
+      }
+      const ids = sampledStudents.map(s => s.id).join('\n');
+      navigator.clipboard.writeText(ids);
+      alert(`${sampledStudents.length} Student IDs copied to clipboard!`);
+    }
 
-                for (let i = 1; i <= pdf.numPages; i++) {
-                    const page = await pdf.getPage(i);
-                    const textContent = await page.getTextContent();
-                    const pageText = textContent.items.map(item => item.str).join(" ");
-                    fullText += pageText + "\n";
-                }
+    function exportSampleCSV() {
+      if (sampledStudents.length === 0) {
+        alert("No sampled students to export!");
+        return;
+      }
 
-                extractStudentIDsFromText(fullText);
-                showToast(`PDF parsed successfully! (${pdf.numPages} page/s)`);
-            } catch (err) {
-                console.error("PDF Parsing Error:", err);
-                showToast("Failed to parse PDF file. Ensure it is a valid document.", "error");
-            }
-        }
+      let csv = "Selection_No,Student_ID,Student_Name,Course_Year,Source_File\n";
+      sampledStudents.forEach((s, idx) => {
+        csv += `${idx + 1},"${s.id}","${s.name}","${s.course}","${s.source}"\n`;
+      });
 
-        function parseRawText() {
-            const raw = document.getElementById('rawTextInput').value;
-            if (!raw.trim()) {
-                showToast("Please enter or paste text to parse.", "error");
-                return;
-            }
-            extractStudentIDsFromText(raw);
-        }
-
-        function extractStudentIDsFromText(text) {
-            // Regex to find typical Student IDs like 23-G-0000430, 2111118, etc.
-            const lines = text.split(/\r?\n/);
-            const extracted = [];
-
-            // Pattern matching Student ID formats (e.g., 23-G-0000430 or 2109743)
-            const idPattern = /(?:[0-9]{2}-[A-Z]-[0-9]{7}|[0-9]{7})/g;
-
-            lines.forEach(line => {
-                const matches = line.match(idPattern);
-                if (matches) {
-                    matches.forEach(id => {
-                        // Extract name surrounding or adjacent if possible
-                        let cleanLine = line.replace(/Passed|Failed|06\/06\/26|BSED-ENGL|\d+\.\d+/g, '').trim();
-                        let namePart = cleanLine.replace(id, '').replace(/^[0-9]+\s*/, '').replace(/\|/g, '').trim();
-                        
-                        if (!namePart || namePart.length < 3) {
-                            namePart = "Student Respondent";
-                        }
-
-                        // Prevent duplicate IDs
-                        if (!extracted.some(s => s.idNo === id)) {
-                            extracted.push({
-                                idNo: id,
-                                name: namePart,
-                                course: "BSED-ENGL 3B"
-                            });
-                        }
-                    });
-                }
-            });
-
-            if (extracted.length > 0) {
-                parsedRoster = extracted;
-                renderParsedRosterTable();
-                showToast(`Successfully extracted ${extracted.length} Student IDs!`);
-            } else {
-                showToast("No valid Student ID patterns found in the text.", "error");
-            }
-        }
-
-        function loadSampleRoster() {
-            parsedRoster = [...samplePDFData];
-            renderParsedRosterTable();
-            showToast("Loaded 42 student IDs from '106 3B' grade report.");
-        }
-
-        function renderParsedRosterTable() {
-            const tbody = document.getElementById('parsedRosterTableBody');
-            document.getElementById('parsedCount').textContent = parsedRoster.length;
-            document.getElementById('statRosterCount').textContent = parsedRoster.length;
-
-            tbody.innerHTML = '';
-
-            if (parsedRoster.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-400 italic">No roster data available. Upload a file or paste text.</td></tr>`;
-                return;
-            }
-
-            parsedRoster.forEach((item, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50";
-                tr.innerHTML = `
-                    <td class="p-2.5 text-slate-400 font-mono">${idx + 1}</td>
-                    <td class="p-2.5 font-semibold text-indigo-700 font-mono">${item.idNo}</td>
-                    <td class="p-2.5 font-medium text-slate-800">${item.name}</td>
-                    <td class="p-2.5 text-slate-500">${item.course || 'N/A'}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-
-            // Update tab 3 input sample count max
-            const targetSampleInput = document.getElementById('sampleCountInput');
-            targetSampleInput.max = parsedRoster.length;
-            if (parseInt(targetSampleInput.value) > parsedRoster.length) {
-                targetSampleInput.value = parsedRoster.length;
-            }
-        }
-
-        function clearParsedRoster() {
-            parsedRoster = [];
-            renderParsedRosterTable();
-            showToast("Roster list cleared.");
-        }
-
-        /* -------------------------------------------------------------
-           TAB 3 LOGIC: RANDOM SAMPLE SELECTION & EXPORT
-           ------------------------------------------------------------- */
-        function generateRandomSample() {
-            if (parsedRoster.length === 0) {
-                showToast("Please upload or load student IDs in Tab 2 first!", "error");
-                switchTab('tab2');
-                return;
-            }
-
-            const k = parseInt(document.getElementById('sampleCountInput').value) || 10;
-            if (k <= 0) {
-                showToast("Sample count must be greater than 0.", "error");
-                return;
-            }
-
-            const countToSelect = Math.min(k, parsedRoster.length);
-            const method = document.getElementById('samplingType').value;
-            const seedText = document.getElementById('seedInput').value;
-
-            // Copy roster for selection
-            let pool = [...parsedRoster];
-
-            if (method === 'srs') {
-                // Simple Random Sampling (Fisher-Yates Shuffle with deterministic seed optional)
-                let shuffled = pool.sort(() => Math.random() - 0.5);
-                selectedRespondents = shuffled.slice(0, countToSelect);
-            } else {
-                // Systematic Random Sampling
-                const interval = Math.max(1, Math.floor(pool.length / countToSelect));
-                selectedRespondents = [];
-                let start = Math.floor(Math.random() * interval);
-                for (let i = 0; i < countToSelect; i++) {
-                    let idx = (start + i * interval) % pool.length;
-                    selectedRespondents.push(pool[idx]);
-                }
-            }
-
-            renderSelectedTable(selectedRespondents);
-            document.getElementById('drawBadge').classList.remove('hidden');
-            showToast(`Randomly selected ${selectedRespondents.length} student respondents!`);
-        }
-
-        function renderSelectedTable(items) {
-            const tbody = document.getElementById('selectedTableBody');
-            document.getElementById('selectedCountText').textContent = items.length;
-            tbody.innerHTML = '';
-
-            if (items.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400 italic">No respondents drawn yet. Click Execute Random Draw.</td></tr>`;
-                return;
-            }
-
-            items.forEach((item, idx) => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-indigo-50/40 transition";
-                tr.innerHTML = `
-                    <td class="p-3 text-slate-400 font-mono">${idx + 1}</td>
-                    <td class="p-3 font-bold text-indigo-700 font-mono">${item.idNo}</td>
-                    <td class="p-3 font-medium text-slate-800">${item.name}</td>
-                    <td class="p-3 text-slate-500">${item.course}</td>
-                    <td class="p-3">
-                        <span class="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded-full font-semibold">
-                            SELECTED
-                        </span>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function filterSelectedTable() {
-            const q = document.getElementById('searchSelected').value.toLowerCase();
-            const filtered = selectedRespondents.filter(r => 
-                r.idNo.toLowerCase().includes(q) || r.name.toLowerCase().includes(q)
-            );
-            renderSelectedTable(filtered);
-        }
-
-        function copyIDsToClipboard() {
-            if (selectedRespondents.length === 0) {
-                showToast("No selected respondents to copy.", "error");
-                return;
-            }
-            const idList = selectedRespondents.map(r => `${r.idNo}\t${r.name}`).join("\n");
-            
-            // Clipboard fallback as specified
-            const textarea = document.createElement('textarea');
-            textarea.value = idList;
-            document.body.appendChild(textarea);
-            textarea.select();
-            document.execCommand('copy');
-            document.body.removeChild(textarea);
-
-            showToast("Copied Student IDs and names to clipboard!");
-        }
-
-        function exportToCSV() {
-            if (selectedRespondents.length === 0) {
-                showToast("No selected respondents to export.", "error");
-                return;
-            }
-
-            let csvContent = "data:text/csv;charset=utf-8,Draw_No,Student_ID,Student_Name,Course_Year\n";
-            selectedRespondents.forEach((r, idx) => {
-                csvContent += `${idx + 1},"${r.idNo}","${r.name}","${r.course}"\n`;
-            });
-
-            const encodedUri = encodeURI(csvContent);
-            const link = document.createElement("a");
-            link.setAttribute("href", encodedUri);
-            link.setAttribute("download", "Selected_Respondents_Sample.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-
-            showToast("CSV file exported successfully!");
-        }
-
-        /* -------------------------------------------------------------
-           UI TOAST NOTIFICATIONS
-           ------------------------------------------------------------- */
-        function showToast(msg, type = "info") {
-            const toast = document.getElementById('toast');
-            const toastMsg = document.getElementById('toastMsg');
-            const toastIcon = document.getElementById('toastIcon');
-
-            toastMsg.textContent = msg;
-            if (type === "error") {
-                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400";
-            } else {
-                toastIcon.className = "fa-solid fa-circle-check text-emerald-400";
-            }
-
-            toast.classList.remove('opacity-0', 'pointer-events-none');
-            toast.classList.add('opacity-100');
-
-            setTimeout(() => {
-                toast.classList.remove('opacity-100');
-                toast.classList.add('opacity-0', 'pointer-events-none');
-            }, 3000);
-        }
-    </script>
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.setAttribute('href', url);
+      a.setAttribute('download', `Sampled_Respondents_${new Date().toISOString().slice(0,10)}.csv`);
+      a.click();
+    }
+  </script>
 </body>
 </html>
