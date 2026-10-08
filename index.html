@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Exact PDF Extraction Engine Active</span>
+        <span>Exact ID Regex (23-E-, 23-G- Preserved) Active</span>
       </div>
     </div>
   </header>
@@ -215,7 +215,7 @@
           <!-- Manual Text Box Input -->
           <div class="space-y-2">
             <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Student ID List</label>
-            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-G-0000430 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-E-0000430 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
             <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all cursor-pointer">
               <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
             </button>
@@ -557,28 +557,26 @@
       });
     }
 
-    // STRICT RECONSTRUCTION: PRESERVES EXACT ID STRINGS & SEPARATES NAME FROM GRADES/REMARKS
+    // STRICT RECONSTRUCTION: PRESERVES EXACT 23-E- AND 23-G- ID STRINGS
     function parseLineEntry(line, defaultSource = "Manual Entry") {
       line = line.trim();
       if (!line) return null;
 
-      // Ignore standard header line
       if (/^\s*(No|ID\s*No|Name|Course|Pre-|Mid-|Final|Remark|Date)/i.test(line)) {
         return null;
       }
 
-      // Regex matches ID string (preserves 23-G-000079, 23-G-0000430, 23-E-0000176 or numeric 2111118)
-      const idRegex = /(2\d-[A-Z0-9]+-\d+|\d{7})/i;
+      // Regex strictly matches complete ID formats like 23-E-0000430, 23-G-000079, or 7-digit numbers
+      const idRegex = /\b(\d{2}-[A-Z]-\d{6,7}|\d{2}-[A-Z0-9]+-\d+|\d{7})\b/i;
       const idMatch = line.match(idRegex);
 
       if (!idMatch) return null;
-      const id = idMatch[0]; // EXACT ID string preserved as printed
+      const id = idMatch[0].trim(); // EXACT ID string preserved including 23-E- / 23-G-
 
-      // Extract row number if present at the very beginning
+      // Extract row number if present at line start
       const rowNoMatch = line.match(/^(\d+)\s+/);
       const rowNo = rowNoMatch ? rowNoMatch[1] : (extractedStudents.length + 1).toString();
 
-      // Get text after the ID string
       const idIndex = line.indexOf(id);
       let afterId = line.substring(idIndex + id.length).trim();
 
@@ -598,7 +596,6 @@
         name = afterId.substring(0, courseMatch.index).trim();
         afterId = afterId.substring(courseMatch.index + course.length).trim();
       } else {
-        // If course isn't found, find where numerical grades or 'Passed'/'Failed' begin
         const gradeOrRemarkIndex = afterId.search(/\b(\d\.\d{2}|Passed|Failed)\b/i);
         if (gradeOrRemarkIndex !== -1) {
           name = afterId.substring(0, gradeOrRemarkIndex).trim();
@@ -624,7 +621,7 @@
       const dateMatch = afterId.match(/\b(\d{2}\/\d{2}\/\d{2})\b/);
       if (dateMatch) datePosted = dateMatch[0];
 
-      // CLEAN NAME: Ensure NO grades, remarks (Passed/Failed), course codes, or line numbers remain in Name
+      // CLEAN NAME: Strictly strip grades, remarks (Passed/Failed), course codes, or numbers from Name
       name = name.replace(/^\d+\s+/, '')
                  .replace(/\b(Passed|Failed|BSED-ENGL|BSED|BSIT|BSCS)\b/gi, '')
                  .replace(/[0-9]/g, '')
