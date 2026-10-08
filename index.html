@@ -31,7 +31,7 @@
       </div>
       <div class="flex items-center space-x-2 text-xs bg-slate-800 px-3 py-1.5 rounded-full text-slate-300 border border-slate-700">
         <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        <span>Exact ID Regex (23-E-, 23-G- Preserved) Active</span>
+        <span>Raw String ID Matcher (23-G- / 23-E- Fixed)</span>
       </div>
     </div>
   </header>
@@ -215,7 +215,7 @@
           <!-- Manual Text Box Input -->
           <div class="space-y-2">
             <label class="block text-xs font-semibold text-slate-600 uppercase tracking-wider">Manual Student ID List</label>
-            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-E-0000430 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
+            <textarea id="manual-ids-input" rows="5" placeholder="Paste Student lines here (one per line)...&#10;e.g.,&#10;1 23-G-0000430 Abad, Marielle V. BSED-ENGL 1.75 2.00 1.50 Passed 06/06/26&#10;2 23-G-0000176 Abejo, Christine B. BSED-ENGL 1.50 1.50 1.00 Passed 06/06/26" class="w-full bg-slate-50 border border-slate-300 text-xs rounded-lg p-2.5 font-mono focus:ring-blue-500 focus:border-blue-500"></textarea>
             <button onclick="addManualIDs()" class="w-full py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-semibold flex items-center justify-center gap-1 shadow transition-all cursor-pointer">
               <i class="fa-solid fa-plus-circle"></i> Add Manual List to Pool
             </button>
@@ -557,28 +557,30 @@
       });
     }
 
-    // STRICT RECONSTRUCTION: PRESERVES EXACT 23-E- AND 23-G- ID STRINGS
+    // ROBUST ID EXTRACTION: Treats ID strictly as string and captures "23-G-", "23-E-", etc.
     function parseLineEntry(line, defaultSource = "Manual Entry") {
-      line = line.trim();
+      line = String(line).trim();
       if (!line) return null;
 
       if (/^\s*(No|ID\s*No|Name|Course|Pre-|Mid-|Final|Remark|Date)/i.test(line)) {
         return null;
       }
 
-      // Regex strictly matches complete ID formats like 23-E-0000430, 23-G-000079, or 7-digit numbers
-      const idRegex = /\b(\d{2}-[A-Z]-\d{6,7}|\d{2}-[A-Z0-9]+-\d+|\d{7})\b/i;
-      const idMatch = line.match(idRegex);
+      // Robust pattern matching any alphanumeric dash code + trailing numbers as a plain String
+      // Matches "23-G-0000430", "23-E-0000176", "23-G-000079", or plain "2111118"
+      const idMatch = line.match(/(2\d\s*-\s*[A-Z0-9]\s*-\s*\d+|\b2\d-[A-Z0-9]+-\d+|\b\d{7}\b)/i);
 
       if (!idMatch) return null;
-      const id = idMatch[0].trim(); // EXACT ID string preserved including 23-E- / 23-G-
+      
+      // Clean inner spaces if PDF renderer placed spaces around hyphens (e.g. "23 - G - 0000430")
+      const id = String(idMatch[0]).replace(/\s+/g, '').toUpperCase();
 
-      // Extract row number if present at line start
+      // Row Number extraction
       const rowNoMatch = line.match(/^(\d+)\s+/);
       const rowNo = rowNoMatch ? rowNoMatch[1] : (extractedStudents.length + 1).toString();
 
-      const idIndex = line.indexOf(id);
-      let afterId = line.substring(idIndex + id.length).trim();
+      const idIndex = line.indexOf(idMatch[0]);
+      let afterId = line.substring(idIndex + idMatch[0].length).trim();
 
       let course = "BSED-ENGL";
       let prelims = "1.50";
@@ -588,7 +590,7 @@
       let remark = "Passed";
       let datePosted = "06/06/26";
 
-      // 1. Isolate Course (e.g. BSED-ENGL, BSIT, BSCS, etc.)
+      // Extract Course
       let name = "";
       const courseMatch = afterId.match(/\b([A-Z]{2,}(-[A-Z]+)?)\b/);
       if (courseMatch) {
@@ -605,7 +607,7 @@
         }
       }
 
-      // 2. Extract numeric grades
+      // Extract Grades
       const gradeMatches = afterId.match(/(\d\.\d{2})/g);
       if (gradeMatches) {
         if (gradeMatches[0]) prelims = gradeMatches[0];
@@ -613,15 +615,15 @@
         if (gradeMatches[2]) finalGrade = gradeMatches[2];
       }
 
-      // 3. Extract Remark
+      // Extract Remark
       if (/\bPassed\b/i.test(afterId)) remark = "Passed";
       else if (/\bFailed\b/i.test(afterId)) remark = "Failed";
 
-      // 4. Extract Date
+      // Extract Date
       const dateMatch = afterId.match(/\b(\d{2}\/\d{2}\/\d{2})\b/);
       if (dateMatch) datePosted = dateMatch[0];
 
-      // CLEAN NAME: Strictly strip grades, remarks (Passed/Failed), course codes, or numbers from Name
+      // Clean Name
       name = name.replace(/^\d+\s+/, '')
                  .replace(/\b(Passed|Failed|BSED-ENGL|BSED|BSIT|BSCS)\b/gi, '')
                  .replace(/[0-9]/g, '')
@@ -728,7 +730,7 @@
             const text = await page.getTextContent();
             
             let items = text.items.map(it => ({
-              str: it.str,
+              str: String(it.str),
               x: it.transform[4],
               y: Math.round(it.transform[5])
             }));
@@ -760,7 +762,7 @@
     }
 
     function parseExtractedText(text, fileName) {
-      const lines = text.split('\n');
+      const lines = String(text).split('\n');
       lines.forEach(line => {
         const student = parseLineEntry(line, fileName);
         if (student && !extractedStudents.some(s => s.id === student.id)) {
@@ -799,7 +801,7 @@
           tr.className = "hover:bg-slate-50 divide-x divide-slate-200 border-b border-slate-200";
           tr.innerHTML = `
             <td class="px-2 py-1.5 text-center text-slate-700">${s.no || (idx + 1)}</td>
-            <td class="px-3 py-1.5 font-mono text-slate-900">${s.id}</td>
+            <td class="px-3 py-1.5 font-mono text-slate-900 font-bold">${s.id}</td>
             <td class="px-3 py-1.5 font-medium text-slate-900">${s.name}</td>
             <td class="px-2 py-1.5 text-slate-800">${s.course}</td>
             <td class="px-2 py-1.5 text-center text-slate-700">${s.prelims}</td>
